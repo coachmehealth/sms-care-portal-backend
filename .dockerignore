@@ -1,0 +1,3 @@
+# docker ignore has to be present so that bcrypt can be installed.
+
+node_modules
