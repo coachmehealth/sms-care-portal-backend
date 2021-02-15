@@ -25,6 +25,23 @@ We recommend using VSCode as it has very good Typescript support.
 1. Run the tests, local server, or typescript compiler using the relevant yarn command. 
 
 
+### Running the project in docker using docker-compose
+1. In root directory run `docker build . -t api-server`
+2. setup env variables in parent directory 
+    `NODE_ENV=`
+    `TWILIO_ACCOUNT_SID=`
+    `TWILIO_AUTH_TOKEN=`
+    `TWILIO_PHONE_NUMBER=`
+    `ATLAS_URI=`
+    `JWT_SECRET=`
+3. copy frontend repository to parent directory
+4. in frontend reposiory run `docker build . -t react-app`
+5. move docker-compose.yml file to parent directory.
+6. in parent directory run `docker-compose up`
+
+
+
 ## Acknowledgements & Thank You's
 
 * The first version of this tool was built by a volunteer team as part of UPenn Hack4Impact. You can find their work [here](https://github.com/hack4impact-upenn/coach-me-health)
+`
