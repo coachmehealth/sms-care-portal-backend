@@ -31,16 +31,6 @@ app.use('/api/messages', messageRouter);
 app.use('/api/twilio', twilioRouter);
 app.use('/api/messageTemplate', messageTemplateRouter);
 
-// Serving static files
-if (process.env.NODE_ENV === 'production') {
-  const root = path.join(__dirname, 'client', 'build');
-
-  app.use(express.static(root));
-  app.get('*', (_, res) => {
-    res.sendFile('index.html', { root });
-  });
-}
-
 const server = app.listen(app.get('port'), () => {
   console.log(`Listening on port ${app.get('port')} 🚀`);
   console.log('Press Command C to stop\n');
