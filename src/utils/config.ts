@@ -1,8 +1,11 @@
-const DATABASE_URI = process.env.DATABASE_URI || '';
-const JWT_SECRET = process.env.JWT_SECRET || '';
+export const DATABASE_URI = process.env.DATABASE_URI || '';
+export const JWT_SECRET = process.env.JWT_SECRET || '';
 
 // sendgrid configs
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
-const SENDGRID_EMAIL = 'hello@email.com';
+export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
+export const SENDGRID_EMAIL = 'hello@email.com';
 
-export { DATABASE_URI, JWT_SECRET, SENDGRID_API_KEY, SENDGRID_EMAIL };
+export const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+export const TWILIO_AUTHTOKEN = process.env.TWILIO_AUTH_TOKEN;
+export const TWILIO_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+

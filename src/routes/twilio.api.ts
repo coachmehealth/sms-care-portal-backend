@@ -10,20 +10,21 @@ import {
 
 import { Message, IMessage } from '../models/message.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
-import { accountSid, authToken, twilioNumber } from '../keys/twilio';
+import {TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN, TWILIO_NUMBER} from '../utils/config';
+
 import { Outcome } from '../models/outcome.model';
 import { Patient } from '../models/patient.model';
 import auth from '../middleware/auth';
 
 
-if(twilioNumber) {
-  var number = twilioNumber.replace(/[^0-9\.]/g, '');
+if(TWILIO_NUMBER) {
+  var number = TWILIO_NUMBER.replace(/[^0-9\.]/g, '');
 } else {
   var number = "MISSING";
   console.log("No phone number found in env vars!");
 }
 
-const twilio = require('twilio')(accountSid, authToken);
+const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN);
 const bodyParser = require('body-parser');
 
 const router = express.Router();
@@ -40,7 +41,7 @@ const getPatientIdFromNumber = (number: any) => {
     });
 };
 
-// function to add responses to the Map 
+// function to add responses to the Map
 function setResponse(key: string, response: Object) {
   responseMap.set(key, response);
 }
@@ -98,18 +99,18 @@ router.post('/sendMessage', auth, function (req, res) {
   }).catch((err) => console.log(err));
 });
 
-   
-// this route receives and parses the message from one user, then responds accordingly with the appropriate output 
+
+// this route receives and parses the message from one user, then responds accordingly with the appropriate output
 router.post('/reply', function (req, res) {
-  const {MessagingResponse} = require('twilio').twiml; 
+  const {MessagingResponse} = require('twilio').twiml;
   const twiml = new MessagingResponse();
   const message = twiml.message();
   if(req.body.Body) {
-    var response = req.body.Body;  
+    var response = req.body.Body;
   } else {
     response = "Invalid Text (image)";
   }
-  // generate date 
+  // generate date
   const date = new Date();
 
   getPatientIdFromNumber(req.body.From.slice(2)).then(
@@ -124,7 +125,7 @@ router.post('/reply', function (req, res) {
           sender: 'PATIENT',
           date: date
         });
-  
+
         incomingMessage.save();
     // if contains many numbers then respond with "too many number inputs"
     // this is a bad outcome, only add to message log
@@ -142,8 +143,8 @@ router.post('/reply', function (req, res) {
         res.writeHead(200, {'Content-Type': 'text/xml'});
         res.end(twiml.toString());
         message.body(responseMap.get('many nums')[language]);
-      }); 
-    
+      });
+
   //Measurement found
   } else if (containsNumber(response)) {
     const value = getNumber(response);
@@ -153,13 +154,13 @@ router.post('/reply', function (req, res) {
         phoneNumber: req.body.From,
         patientID: patientId,
         response: response, // the entire text the patient sends
-        value: value[0], // numerical measurement 
+        value: value[0], // numerical measurement
         alertType: classifyNumeric(value), // Color
         date: date
       });
       Patient.findByIdAndUpdate(patientId, { $inc: { responseCount : 1}}).catch((err) => console.log(err));
       outcome.save().then(() => {
-      }); 
+      });
       const classification = classifyNumeric(value)
       const typeUpperCase = classification.charAt(0).toUpperCase() + classification.slice(1);
       const upperLang = language.charAt(0).toUpperCase() + language.slice(1);
@@ -174,7 +175,7 @@ router.post('/reply', function (req, res) {
           sender: 'BOT',
           date: date
         });
-  
+
         outgoingMessage.save();
         message.body(messageTemp.text);
       }).catch((err) => {
@@ -186,14 +187,14 @@ router.post('/reply', function (req, res) {
           sender: 'BOT',
           date: date
         });
-  
+
         outgoingMessage.save();
         message.body(responseMap.get(classifyNumeric(value))[language]);
       }).finally(() => {
         res.writeHead(200, {'Content-Type': 'text/xml'});
         res.end(twiml.toString());
       });
-      
+
     } else {
       const outgoingMessage = new Message({
         sent: true,
@@ -210,14 +211,14 @@ router.post('/reply', function (req, res) {
         res.end(twiml.toString());
       });
     }
-    
-    
+
+
   //Message is "no"
   } else if (response.toLowerCase() === ('no')) {
     const outgoingMessage = new Message({
       sent: true,
       phoneNumber: req.body.To,
-      patientID: patientId, 
+      patientID: patientId,
       message: responseMap.get('no')[language],
       sender: 'BOT',
       date: date
@@ -228,13 +229,13 @@ router.post('/reply', function (req, res) {
       res.writeHead(200, {'Content-Type': 'text/xml'});
       res.end(twiml.toString());
     });
-   
+
   //catch all
   } else {
     const outgoingMessage = new Message({
       sent: true,
       phoneNumber: req.body.To,
-      patientID: patientId, 
+      patientID: patientId,
       message: responseMap.get('catch')[language],
       sender: 'BOT',
       date
@@ -244,9 +245,9 @@ router.post('/reply', function (req, res) {
         message.body(responseMap.get('catch')[language]);
         res.writeHead(200, {'Content-Type': 'text/xml'});
         res.end(twiml.toString());
-      }); 
+      });
   }
-  
+
   });
 });
 

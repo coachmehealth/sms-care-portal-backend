@@ -2,14 +2,14 @@ import express from 'express';
 import schedule from 'node-schedule';
 import { Message, IMessage } from '../models/message.model';
 import { Outcome, IOutcome } from '../models/outcome.model';
-import { accountSid, authToken, twilioNumber } from '../keys/twilio';
+import {TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN, TWILIO_NUMBER} from '../utils/config';
 import { Patient } from '../models/patient.model';
 import { ObjectId } from 'mongodb';
 
-const twilio = require('twilio')(accountSid, authToken);
+const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN);
 
-if(twilioNumber) {
-  var number = twilioNumber.replace(/[^0-9\.]/g, '');
+if(TWILIO_NUMBER) {
+  var number = TWILIO_NUMBER.replace(/[^0-9\.]/g, '');
 } else {
   var number = "MISSING";
   console.log("No phone number found in env vars!");
@@ -58,7 +58,7 @@ const sendMessage = (msg : IMessage) => {
       to: msg.phoneNumber
     });
 
- 
+
   Message.findOneAndUpdate( { _id: msg.id }, {
     sent: true
   }, (err, res) => {
