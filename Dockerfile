@@ -12,5 +12,7 @@ COPY . /app
 
 ENV NODE_ENV=production
 
+RUN yarn build
+
 EXPOSE 3000
-CMD ["yarn", "start"]
+CMD ["node", "build/index.js"]
