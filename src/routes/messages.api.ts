@@ -51,31 +51,31 @@ cron.schedule('0 0 0 * * *', () => {
 
 router.post('/newMessage', auth, async (req, res) => {
   // validate phone number
-  if (!req.body.phoneNumber || req.body.phoneNumber.match(/\d/g) == null ||  req.body.phoneNumber.match(/\d/g).length !== 10){
+  if (!req.body.phoneNumber || req.body.phoneNumber.match(/\d/g) === null ||  req.body.phoneNumber.match(/\d/g).length !== 10){
     return res.status(400).json({
       msg: 'Unable to add message: invalid phone number'
-    }); 
+    });
   }
 
-  if (!req.body.patientID || req.body.patientID == ''){
+  if (!req.body.patientID || req.body.patientID === ''){
     return res.status(400).json({
       msg: 'Unable to add message: must include patient ID'
     });
   }
 
-  if (!req.body.sender || req.body.sender == ''){
+  if (!req.body.sender || req.body.sender === ''){
     return res.status(400).json({
       msg: 'Unable to add message: must include sender'
     });
   }
 
-  if (!req.body.date || req.body.date == ''){
+  if (!req.body.date || req.body.date === ''){
     return res.status(400).json({
       msg: 'Unable to add message: must include date'
     });
   }
 
-  if (req.body.image == null) {
+  if (req.body.image === null) {
     const newMessage = new Message({
       phoneNumber: req.body.phoneNumber,
       patientID: req.body.patientID,
@@ -84,31 +84,31 @@ router.post('/newMessage', auth, async (req, res) => {
       date: req.body.date
     });
     return newMessage.save().then( () => {
-      
+
       res.status(200).json({
         success: true
       });
     });
-  } 
-    
+  }
+
 });
 
 
 router.post('/newOutcome', auth, async (req, res) => {
   // validate phone number
-  if (!req.body.phoneNumber || req.body.phoneNumber.match(/\d/g) == null ||  req.body.phoneNumber.match(/\d/g).length !== 10){
+  if (!req.body.phoneNumber || req.body.phoneNumber.match(/\d/g) === null ||  req.body.phoneNumber.match(/\d/g).length !== 10){
     return res.status(400).json({
       msg: 'Unable to add outcome: invalid phone number'
     });
   }
 
-  if (req.body.patientID == ''){
+  if (req.body.patientID === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include patient ID'
     });
   }
 
-  if (req.body.language == ''){
+  if (req.body.language === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include language'
     });
@@ -132,19 +132,19 @@ router.post('/newOutcome', auth, async (req, res) => {
 
 router.post('/scheduledMessage', auth, async (req, res) => {
   // validate phone number
-  if (!req.body.phoneNumber || req.body.phoneNumber.match(/\d/g) == null ||  req.body.phoneNumber.match(/\d/g).length !== 10){
+  if (!req.body.phoneNumber || !req.body.phoneNumber.match(/\d/g) ||  req.body.phoneNumber.match(/\d/g).length !== 10){
     return res.status(400).json({
       msg: 'Unable to add outcome: invalid phone number'
     });
   }
 
-  if (req.body.patientID == ''){
+  if (req.body.patientID === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include patient ID'
     });
   }
 
-  if (req.body.language == ''){
+  if (req.body.language === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include language'
     });

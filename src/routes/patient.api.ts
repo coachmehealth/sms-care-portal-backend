@@ -6,7 +6,7 @@ import auth from '../middleware/auth';
 import errorHandler from './error';
 import { Message } from '../models/message.model';
 
-const {ObjectId} = require('mongoose').Types; 
+const {ObjectId} = require('mongoose').Types;
 
 const router = express.Router();
 
@@ -18,25 +18,25 @@ router.post('/add', auth, async (req, res) => {
         });
     }
 
-    if (req.body.firstName == ''){
+    if (req.body.firstName === ''){
         return res.status(400).json({
             msg: 'Unable to add patient: must include first name'
         });
     }
 
-    if (req.body.lastName == ''){
+    if (req.body.lastName === ''){
         return res.status(400).json({
             msg: 'Unable to add patient: must include last name'
         });
     }
 
-    if (req.body.language == ''){
+    if (req.body.language === ''){
         return res.status(400).json({
             msg: 'Unable to add patient: must include language'
         });
     }
 
-    if (!req.body.coachId || req.body.coachId == ''){
+    if (!req.body.coachId || req.body.coachId === ''){
         return res.status(400).json({
             msg: 'Unable to add patient: select a coach from the dropdown'
         });
@@ -44,7 +44,7 @@ router.post('/add', auth, async (req, res) => {
 
     // Time parsing
     const splitTime = req.body.msgTime.split(':');
-    if (splitTime.length != 2){
+    if (splitTime.length !== 2){
         return res.status(400).json({
             msg: 'Unable to add patient: invalid message time'
         });
@@ -83,7 +83,7 @@ router.post('/add', auth, async (req, res) => {
 router.get('/getPatient/:id', auth, (req, res) => {
   Patient.findOne({
     _id: req.params.id
-  }).then( 
+  }).then(
     (patient) => {
       res.status(200).json(patient);
     }
@@ -101,20 +101,20 @@ router.put('/increaseResponseCount/:id', auth, (req, res) => {
           msg: 'Unable to add patient: invalid phone number'
         });
       }
-    
-      if (req.body.firstName == ''){
+
+      if (req.body.firstName === ''){
         return res.status(400).json({
           msg: 'Unable to add patient: must include first name'
         });
       }
-    
-      if (req.body.lastName == ''){
+
+      if (req.body.lastName === ''){
         return res.status(400).json({
           msg: 'Unable to add patient: must include last name'
         });
       }
-    
-      if (req.body.language == ''){
+
+      if (req.body.language === ''){
         return res.status(400).json({
           msg: 'Unable to add patient: must include language'
         });
@@ -143,7 +143,7 @@ router.get('/getPatientOutcomes/:patientID', auth, (req, res) => {
     const id = req.params.patientID;
     return Outcome.find( {patientID: new ObjectId(id)})
     .then((outcomeList) => {
-      if (!outcomeList || outcomeList.length == 0 ) return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList || outcomeList.length === 0 ) return errorHandler(res, 'No outcomes found!');
 
       return res.status(200).json(outcomeList.sort((a: any, b: any) => b.date - a.date));
     })
@@ -155,7 +155,7 @@ router.get('/getPatient/:patientID', auth, (req, res) => {
     return Patient.findById(new ObjectId(id))
     .then((patient) => {
       if (!patient) return errorHandler(res, 'No patient found!');
-      return res.status(200).json(patient); 
+      return res.status(200).json(patient);
     })
     .catch((err) => errorHandler(res, err.message));
 });
@@ -164,7 +164,7 @@ router.get('/getPatientMessages/:patientID', auth, (req, res) => {
     const id = req.params.patientID;
     return Message.find( {patientID: new ObjectId(id)})
     .then((outcomeList) => {
-      if (!outcomeList || outcomeList.length == 0 ) return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList || outcomeList.length === 0 ) return errorHandler(res, 'No outcomes found!');
       return res.status(200).json(outcomeList);
     })
     .catch((err) => errorHandler(res, err.message));
