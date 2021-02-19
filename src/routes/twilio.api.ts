@@ -8,7 +8,7 @@ import {
   containsMany
 } from './twilio.util';
 
-import { Message, IMessage } from '../models/message.model';
+import { Message } from '../models/message.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
 import {TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN, TWILIO_NUMBER} from '../utils/config';
 
@@ -17,10 +17,11 @@ import { Patient } from '../models/patient.model';
 import auth from '../middleware/auth';
 
 
+let twilioNumber: string;
 if (TWILIO_NUMBER) {
-  var number = TWILIO_NUMBER.replace(/[^0-9\.]/g, '');
+  twilioNumber = TWILIO_NUMBER.replace(/[^0-9.]/g, '');
 } else {
-  var number = 'MISSING';
+  twilioNumber = 'MISSING';
   console.log('No phone number found in env vars!');
 }
 
@@ -79,13 +80,13 @@ router.post('/sendMessage', auth, function (req, res) {
   twilio.messages
     .create({
       body: contnet,
-      from: number, // this is hardcoded right now
+      from: twilioNumber, // this is hardcoded right now
       to: recept
     });
 
   const outgoingMessage = new Message({
     sent: true,
-    phoneNumber: number,
+    phoneNumber: twilioNumber,
     patientID,
     message: contnet,
     sender: 'COACH',
@@ -106,9 +107,8 @@ router.post('/reply', function (req, res) {
   const {MessagingResponse} = require('twilio').twiml;
   const twiml = new MessagingResponse();
   const message = twiml.message();
-  if (req.body.Body) {
-    var response = req.body.Body;
-  } else {
+  let response = req.body.Body;
+  if (!response) {
     response = 'Invalid Text (image)';
   }
   // generate date
@@ -179,7 +179,7 @@ router.post('/reply', function (req, res) {
 
             outgoingMessage.save();
             message.body(messageTemp.text);
-          }).catch((err) => {
+          }).catch(() => {
             const outgoingMessage = new Message({
               sent: true,
               phoneNumber: req.body.To,
