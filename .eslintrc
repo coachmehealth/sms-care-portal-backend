@@ -4,7 +4,7 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "extends": ["airbnb-typescript", "prettier"],
+  "extends": ["airbnb-typescript/base", "prettier"],
   "rules": {
     "no-console": "warn",
     "max-len": "off",
