@@ -1,31 +1,30 @@
 const containsNumber = (input: string): boolean => {
   return (/\b\d{2}\b/.test(input) || /\b\d{3}\b/.test(input));
 };
-  
+
 const containsMany = (input: string):boolean => {
   const rex = /-?\d(?:[\d]*\.\d+|[\d]*)/g;
-  let match;
   let nums = 0;
-  while ((match = rex.exec(input)) !== null) {
-    nums++;
-    if (nums > 1) { 
+  while (rex.exec(input)) {
+    nums += 1;
+    if (nums > 1) {
       return true;
     }
   }
   return false;
 };
-    
+
 // regex function to get the number from the string (use in conjunction with contains)
 // check for 2 digit number and if null check for 3 digit number
 const getNumber = (input_s: string): any => {
   if (input_s.match(/\b\d{3}\b/g) != null) {
     return input_s.match(/\d{3}/g);
   }
-    
+
   return input_s.match(/\b\d{2}\b/g);
-    
+
 };
-  
+
 // classify numeric user responses. We do not use spacing for the inequalities to be consistent, mostly for the mapping
 // currently, we have this as a switch statement but ultimately we want to create some sort of data structure for this as well
 const classifyNumeric = (input:string):string => {
@@ -45,9 +44,9 @@ const classifyNumeric = (input:string):string => {
   if (number >= 181 && number <= 300){
     return 'red';
   }
-      
+
   return '>=301';
-      
+
 };
-  
+
 export { containsNumber, getNumber, classifyNumeric, containsMany};
