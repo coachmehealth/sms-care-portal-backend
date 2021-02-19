@@ -28,7 +28,7 @@ const getNumber = (input_s: string): any => {
 // classify numeric user responses. We do not use spacing for the inequalities to be consistent, mostly for the mapping
 // currently, we have this as a switch statement but ultimately we want to create some sort of data structure for this as well
 const classifyNumeric = (input:string):string => {
-  const number : number = parseInt(input);
+  const number : number = parseInt(input, 10);
   if (number < 70) {
     return 'toolow';
   }
