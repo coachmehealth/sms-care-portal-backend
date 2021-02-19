@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
 import express from 'express';
 import { Outcome } from '../models/outcome.model';
-import { Patient, IPatient } from '../models/patient.model';
+import { Patient } from '../models/patient.model';
 import auth from '../middleware/auth';
 import errorHandler from './error';
 import { Message } from '../models/message.model';
@@ -128,9 +128,9 @@ router.put('/increaseResponseCount/:id', auth, (req, res) => {
         responseCount: req.body.responseCount,
         messagesSent: req.body.messagesSent,
       });
-    Patient.updateOne({_id: req.params.id}, patient).then(
+    return Patient.updateOne({_id: req.params.id}, patient).then(
       () => {
-        res.status(201).json({
+        return res.status(201).json({
           msg: 'Patient response count updated successfully!',
           sucess: true
         });
@@ -174,7 +174,7 @@ router.post('/status', auth, (req, res) => {
   const {id} = req.body;
   const {status} = req.body;
   return Patient.findByIdAndUpdate( new ObjectId(id), {enabled: status})
-  .then((updatedPaitnet) => {
+  .then(() => {
     return res.status(200).json('Patiet Status Changed!');
   })
   .catch((err) => errorHandler(res, err.message));
