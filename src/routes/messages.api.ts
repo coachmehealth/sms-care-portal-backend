@@ -21,7 +21,7 @@ cron.schedule('0 0 0 * * *', () => {
   console.log('Running batch of schdueled messages');
   Patient.find().then((patients) => {
     MessageTemplate.find({type: 'Initial'}).then((MessageTemplates) => {
-      for (const patient of patients) {
+      patients.forEach((patient) => {
         if (patient.enabled) {
           const messages = MessageTemplates.filter(template => template.language === patient.language);
           const randomVal =  Math.floor(Math.random() * (messages.length));
@@ -38,7 +38,7 @@ cron.schedule('0 0 0 * * *', () => {
           });
           newMessage.save();
         }
-      }
+      });
     }).catch((err) => console.log(err));
   });
 }, {
