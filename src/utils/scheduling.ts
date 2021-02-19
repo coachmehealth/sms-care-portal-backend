@@ -1,43 +1,22 @@
-import express from 'express';
 import schedule from 'node-schedule';
 import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
-import { Outcome, IOutcome } from '../models/outcome.model';
 import {TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN, TWILIO_NUMBER} from './config';
 import { Patient } from '../models/patient.model';
 
 const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN);
 
+let twilioNumber: string;
 if (TWILIO_NUMBER) {
-  var number = TWILIO_NUMBER.replace(/[^0-9\.]/g, '');
+  twilioNumber = TWILIO_NUMBER.replace(/[^0-9.]/g, '');
 } else {
-  var number = 'MISSING';
+  twilioNumber = 'MISSING';
   console.log('No phone number found in env vars!');
 }
 
 
 // time in seconds between each run of scheduler
 const schedulingInterval = 5;
-
-// selects all messages which should be sent within the next __ seconds, and schedules them to be sent
-const scheduleMessages = (interval : number) => {
-  const intervalStart = new Date();
-  const intervalEnd = new Date(intervalStart.getTime());
-  intervalEnd.setSeconds(intervalEnd.getSeconds() + interval);
-
-  const messages = Message.find({
-    date : {
-      $lt: intervalEnd,
-    },
-    sent: false
-  }, (err, docs) => {
-    docs.forEach( (doc) => {
-      schedule.scheduleJob(doc.date, () => {
-        sendMessage(doc);
-      });
-    });
-  });
-};
 
 const getPatientIdFromNumber = (number: any) => {
   return Patient.findOne({ phoneNumber: number}).select('_id')
@@ -55,14 +34,14 @@ const sendMessage = (msg : IMessage) => {
   twilio.messages
     .create({
       body: msg.message,
-      from: number,
+      from: twilioNumber,
       to: msg.phoneNumber
     });
 
 
   Message.findOneAndUpdate( { _id: msg.id }, {
     sent: true
-  }, (err, res) => {
+  }, (err) => {
     if (err){
       console.log(err);
     }
@@ -76,6 +55,28 @@ const sendMessage = (msg : IMessage) => {
     });
 
 };
+
+// selects all messages which should be sent within the next __ seconds, and schedules them to be sent
+const scheduleMessages = (interval : number) => {
+  const intervalStart = new Date();
+  const intervalEnd = new Date(intervalStart.getTime());
+  intervalEnd.setSeconds(intervalEnd.getSeconds() + interval);
+
+  Message.find({
+    date : {
+      $lt: intervalEnd,
+    },
+    sent: false
+  }, (err, docs) => {
+    docs.forEach( (doc) => {
+      schedule.scheduleJob(doc.date, () => {
+        sendMessage(doc);
+      });
+    });
+  });
+};
+
+
 
 const initializeScheduler = () => {
   scheduleMessages(schedulingInterval);
