@@ -53,7 +53,7 @@ router.post('/add', auth, async (req, res) => {
     const hours = Number(splitTime[0]);
     const mins = Number(splitTime[1]);
 
-    if (isNaN(hours) || isNaN(mins) || hours < 0 || hours >= 24 || mins >= 60 || mins < 0){
+    if (Number.isNaN(hours) || Number.isNaN(mins) || hours < 0 || hours >= 24 || mins >= 60 || mins < 0){
         return res.status(400).json({
             msg: 'Unable to add patient: invalid message time'
         });
