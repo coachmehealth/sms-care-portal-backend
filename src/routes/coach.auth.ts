@@ -1,5 +1,7 @@
 import express from 'express';
 import { hash, compare } from 'bcrypt';
+import mongoose from 'mongoose';
+import { ObjectId } from 'mongodb';
 import { Coach, ICoach } from '../models/coach.model';
 import auth from '../middleware/auth';
 import errorHandler from './error';
@@ -8,9 +10,7 @@ import {
   generateRefreshToken,
   validateRefreshToken,
 } from './coach.util';
-import mongoose from 'mongoose';
 import { Patient } from '../models/patient.model';
-import { ObjectId } from 'mongodb';
 
 
 const router = express.Router();
@@ -53,10 +53,10 @@ router.post('/login', async (req, res) => {
   const { password } = req.body;
 
   Coach.findOne({ email: emailAdress}).then((coach):
-    | Response
-    | Promise<boolean>
-    | boolean
-    | PromiseLike<boolean> => {
+  | Response
+  | Promise<boolean>
+  | boolean
+  | PromiseLike<boolean> => {
     // coach does not exist
     if (!coach) return errorHandler(res, 'Email or password is incorrect.');
 
@@ -132,20 +132,20 @@ router.get('/getPatients', auth, (req, res) => {
 
 
 router.get('/search', auth, async (req, res) => {
-    const query = req.query.query;
-    Coach.aggregate([
-        {$project: { "name" : { $concat : [ "$firstName", " ", "$lastName" ] } }},
-        { $match: {
-            "name": {
-                $regex: query,
-                $options: "i"
-            }
-        }}
-    ]).exec(function(err, result){
-        return res.status(200).json({
-            coaches: result
-        });
+  const {query} = req.query;
+  Coach.aggregate([
+    {$project: { 'name' : { $concat : [ '$firstName', ' ', '$lastName' ] } }},
+    { $match: {
+      'name': {
+        $regex: query,
+        $options: 'i'
+      }
+    }}
+  ]).exec(function (err, result){
+    return res.status(200).json({
+      coaches: result
     });
+  });
 });
 
 

@@ -1,7 +1,5 @@
 /* eslint-disable no-shadow */
 import express from 'express';
-var cron = require('node-cron');
-const ObjectsToCsv = require('objects-to-csv');
 import { ObjectId } from 'mongodb';
 import auth from '../middleware/auth';
 import { Message, IMessage } from '../models/message.model';
@@ -13,26 +11,29 @@ import { Patient, IPatient } from '../models/patient.model';
 import initializeScheduler from '../utils/scheduling';
 import errorHandler from './error';
 
+const cron = require('node-cron');
+const ObjectsToCsv = require('objects-to-csv');
+
 const router = express.Router();
 initializeScheduler();
 
-//run messages every day at midnight PST
+// run messages every day at midnight PST
 cron.schedule('0 0 0 * * *', () => {
-  console.log("Running batch of schdueled messages");
+  console.log('Running batch of schdueled messages');
   Patient.find().then((patients) => {
-    MessageTemplate.find({type: "Initial"}).then((MessageTemplates) => {
+    MessageTemplate.find({type: 'Initial'}).then((MessageTemplates) => {
       for (const patient of patients) {
-        if(patient.enabled) {
+        if (patient.enabled) {
           const messages = MessageTemplates.filter(template => template.language === patient.language);
           const randomVal =  Math.floor(Math.random() * (messages.length));
           const message = messages[randomVal].text;
-          var date = new Date();
+          const date = new Date();
           date.setMinutes(date.getMinutes() + 1);
           const newMessage = new Message({
             patientID: new ObjectId(patient._id),
             phoneNumber: patient.phoneNumber,
-            date: date,
-            message: message,
+            date,
+            message,
             sender: 'BOT',
             sent: false
           });
@@ -41,9 +42,9 @@ cron.schedule('0 0 0 * * *', () => {
       }
     }).catch((err) => console.log(err));
   });
-  },{
-    scheduled: true,
-    timezone: "America/Los_Angeles"
+}, {
+  scheduled: true,
+  timezone: 'America/Los_Angeles'
 });
 
 
@@ -167,12 +168,12 @@ router.post('/scheduledMessage', auth, async (req, res) => {
 
 router.get('/allOutcomes', auth, async (req, res) => {
   return Outcome.find()
-  .then((outcomesList) => {
-    Patient.find().then((patientList) => {
-      res.status(200).send({outcomes: outcomesList, patients: patientList});
-    });
+    .then((outcomesList) => {
+      Patient.find().then((patientList) => {
+        res.status(200).send({outcomes: outcomesList, patients: patientList});
+      });
 
-  })
-  .catch((err) => errorHandler(res, err.msg))
+    })
+    .catch((err) => errorHandler(res, err.msg));
 });
 export default router;

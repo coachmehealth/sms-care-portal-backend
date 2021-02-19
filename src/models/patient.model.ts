@@ -18,7 +18,7 @@ interface IPatient extends mongoose.Document {
     contentType: String;
   }];
   enabled: boolean;
-};  
+}  
 
 const PatientSchema = new Schema({
   firstName: { type: String, required: true },

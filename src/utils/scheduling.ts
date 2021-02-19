@@ -1,18 +1,18 @@
 import express from 'express';
 import schedule from 'node-schedule';
+import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
 import { Outcome, IOutcome } from '../models/outcome.model';
-import {TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN, TWILIO_NUMBER} from '../utils/config';
+import {TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN, TWILIO_NUMBER} from './config';
 import { Patient } from '../models/patient.model';
-import { ObjectId } from 'mongodb';
 
 const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN);
 
-if(TWILIO_NUMBER) {
+if (TWILIO_NUMBER) {
   var number = TWILIO_NUMBER.replace(/[^0-9\.]/g, '');
 } else {
-  var number = "MISSING";
-  console.log("No phone number found in env vars!");
+  var number = 'MISSING';
+  console.log('No phone number found in env vars!');
 }
 
 
@@ -45,7 +45,8 @@ const getPatientIdFromNumber = (number: any) => {
       if (!patientId) console.log(`'No patient found for ${number}!'`);
       return patientId;
     })
-    .catch((err) => { return (err.message);
+    .catch((err) => {
+      return (err.message);
     });
 };
 

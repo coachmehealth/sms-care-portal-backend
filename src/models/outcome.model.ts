@@ -10,7 +10,7 @@ interface IOutcome extends mongoose.Document {
   response: string,
   value: number;
   alertType: string;
-};
+}
 
 const OutcomeSchema = new Schema({
   patientID: { type: mongoose.Schema.Types.ObjectId, required: true },
