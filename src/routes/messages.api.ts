@@ -2,17 +2,16 @@
 import express from 'express';
 import { ObjectId } from 'mongodb';
 import auth from '../middleware/auth';
-import { Message, IMessage } from '../models/message.model';
+import { Message } from '../models/message.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
-import { Outcome, IOutcome } from '../models/outcome.model';
-import { Patient, IPatient } from '../models/patient.model';
+import { Outcome } from '../models/outcome.model';
+import { Patient } from '../models/patient.model';
 
 
 import initializeScheduler from '../utils/scheduling';
 import errorHandler from './error';
 
 const cron = require('node-cron');
-const ObjectsToCsv = require('objects-to-csv');
 
 const router = express.Router();
 initializeScheduler();
@@ -85,12 +84,13 @@ router.post('/newMessage', auth, async (req, res) => {
     });
     return newMessage.save().then( () => {
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true
       });
     });
   }
 
+  throw new Error('something went wrong, I should not have gotten here');
 });
 
 
