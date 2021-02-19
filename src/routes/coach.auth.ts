@@ -1,6 +1,5 @@
 import express from 'express';
 import { hash, compare } from 'bcrypt';
-import mongoose from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { Coach, ICoach } from '../models/coach.model';
 import auth from '../middleware/auth';
@@ -123,9 +122,8 @@ router.get('/me', auth, (req, res) => {
 });
 
 router.get('/getPatients', auth, (req, res) => {
-  const patientID = req.params.id;
   return Patient.find().then((patients) => {
-    
+
     return res.status(200).json(patients);
   });
 });
@@ -141,7 +139,7 @@ router.get('/search', auth, async (req, res) => {
         $options: 'i'
       }
     }}
-  ]).exec(function (err, result){
+  ]).exec((err, result) => {
     return res.status(200).json({
       coaches: result
     });
