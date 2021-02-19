@@ -24,3 +24,5 @@ jobs:
       run: yarn install --frozen-lockfile
     - name: Compile Typescript
       run: npx tsc
+    - name: Lint Code
+      run: npx eslint .
