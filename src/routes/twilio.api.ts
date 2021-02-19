@@ -17,6 +17,8 @@ import { Patient } from '../models/patient.model';
 import auth from '../middleware/auth';
 
 
+const {MessagingResponse} = require('twilio').twiml;
+
 let twilioNumber: string;
 if (TWILIO_NUMBER) {
   twilioNumber = TWILIO_NUMBER.replace(/[^0-9.]/g, '');
@@ -104,7 +106,6 @@ router.post('/sendMessage', auth, function (req, res) {
 
 // this route receives and parses the message from one user, then responds accordingly with the appropriate output
 router.post('/reply', function (req, res) {
-  const {MessagingResponse} = require('twilio').twiml;
   const twiml = new MessagingResponse();
   const message = twiml.message();
   let response = req.body.Body;
