@@ -10,7 +10,7 @@ import {
 
 import { Message } from '../models/message.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
-import {TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN, TWILIO_NUMBER} from '../utils/config';
+import {TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER} from '../utils/config';
 
 import { Outcome } from '../models/outcome.model';
 import { Patient } from '../models/patient.model';
@@ -20,14 +20,14 @@ import auth from '../middleware/auth';
 const {MessagingResponse} = require('twilio').twiml;
 
 let twilioNumber: string;
-if (TWILIO_NUMBER) {
-  twilioNumber = TWILIO_NUMBER.replace(/[^0-9.]/g, '');
+if (TWILIO_FROM_NUMBER) {
+  twilioNumber = TWILIO_FROM_NUMBER.replace(/[^0-9.]/g, '');
 } else {
   twilioNumber = 'MISSING';
   console.log('No phone number found in env vars!');
 }
 
-const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTHTOKEN);
+const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const bodyParser = require('body-parser');
 
 const router = express.Router();
