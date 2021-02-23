@@ -65,7 +65,7 @@ function initializeState() {
 
 initializeState();
 
-router.post('/sendMessage', auth, function (req, res) {
+router.post('/sendMessage', auth, (req, res) => {
   const contnet = req.body.message;
   const recept = req.body.to;
   const patientID = new ObjectId(req.body.patientID);
@@ -97,7 +97,7 @@ router.post('/sendMessage', auth, function (req, res) {
 
 
 // this route receives and parses the message from one user, then responds accordingly with the appropriate output
-router.post('/reply', function (req, res) {
+router.post('/reply', (req, res) => {
   const twiml = new MessagingResponse();
   const message = twiml.message();
   let response = req.body.Body;
