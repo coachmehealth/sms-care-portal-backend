@@ -6,14 +6,6 @@ import { Patient } from '../models/patient.model';
 
 const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-let twilioNumber: string;
-if (TWILIO_FROM_NUMBER) {
-  twilioNumber = TWILIO_FROM_NUMBER.replace(/[^0-9.]/g, '');
-} else {
-  twilioNumber = 'MISSING';
-  console.log('No phone number found in env vars!');
-}
-
 
 // time in seconds between each run of scheduler
 const schedulingInterval = 5;
@@ -34,7 +26,7 @@ const sendMessage = (msg : IMessage) => {
   twilio.messages
     .create({
       body: msg.message,
-      from: twilioNumber,
+      from: TWILIO_FROM_NUMBER,
       to: msg.phoneNumber
     });
 

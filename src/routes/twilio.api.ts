@@ -19,14 +19,6 @@ import auth from '../middleware/auth';
 
 const {MessagingResponse} = require('twilio').twiml;
 
-let twilioNumber: string;
-if (TWILIO_FROM_NUMBER) {
-  twilioNumber = TWILIO_FROM_NUMBER.replace(/[^0-9.]/g, '');
-} else {
-  twilioNumber = 'MISSING';
-  console.log('No phone number found in env vars!');
-}
-
 const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const bodyParser = require('body-parser');
 
@@ -82,13 +74,13 @@ router.post('/sendMessage', auth, function (req, res) {
   twilio.messages
     .create({
       body: contnet,
-      from: twilioNumber, // this is hardcoded right now
+      from: TWILIO_FROM_NUMBER,
       to: recept
     });
 
   const outgoingMessage = new Message({
     sent: true,
-    phoneNumber: twilioNumber,
+    phoneNumber: TWILIO_FROM_NUMBER,
     patientID,
     message: contnet,
     sender: 'COACH',
