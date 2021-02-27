@@ -5,9 +5,13 @@
     "project": "./tsconfig.json"
   },
   "extends": ["airbnb-typescript/base", "prettier"],
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
     "no-console": "warn",
     "max-len": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "prettier/prettier": "error",
   }
 }
