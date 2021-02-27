@@ -10,6 +10,7 @@ import {
   validateRefreshToken,
 } from './coach.util';
 import { Patient } from '../models/patient.model';
+import { CoachMeRequest } from '../types/coach_me_request';
 
 
 const router = express.Router();
@@ -108,7 +109,7 @@ router.post('/refreshToken', (req, res) => {
 
 // get me
 // protected route
-router.get('/me', auth, (req, res) => {
+router.get('/me', auth, (req: CoachMeRequest, res) => {
 
   const { userId } = req;
   return Coach.findById(new ObjectId(userId))

@@ -2,10 +2,11 @@ import * as express from 'express';
 import { verify } from 'jsonwebtoken';
 import { IUser } from '../models/user.model';
 import errorHandler from '../routes/error';
+import { CoachMeRequest } from '../types/coach_me_request';
 import { JWT_SECRET } from '../utils/config';
 
 const auth = (
-  req: express.Request,
+  req: CoachMeRequest,
   res: express.Response,
   next: express.NextFunction
 ) => {
