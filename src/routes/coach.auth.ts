@@ -12,7 +12,6 @@ import {
 import { Patient } from '../models/patient.model';
 import { CoachMeRequest } from '../types/coach_me_request';
 
-
 const router = express.Router();
 
 const saltRounds = 10;
@@ -25,7 +24,7 @@ router.post('/signup', auth, async (req, res) => {
   const emailLower = emailRaw.toLowerCase();
   const { password } = req.body;
 
-  if (await Coach.findOne({ email:emailLower })) {
+  if (await Coach.findOne({ email: emailLower })) {
     return errorHandler(res, 'User already exists.');
   }
 
@@ -49,10 +48,10 @@ router.post('/signup', auth, async (req, res) => {
 
 // login coach
 router.post('/login', async (req, res) => {
-  const emailAdress  = req.body.email.toLowerCase();
+  const emailAdress = req.body.email.toLowerCase();
   const { password } = req.body;
 
-  Coach.findOne({ email: emailAdress}).then((coach):
+  Coach.findOne({ email: emailAdress }).then((coach):
   | Response
   | Promise<boolean>
   | boolean
@@ -73,7 +72,7 @@ router.post('/login', async (req, res) => {
             success: true,
             accessToken: tokens[0],
             refreshToken: tokens[1],
-          })
+          }),
         );
       }
 
@@ -110,7 +109,6 @@ router.post('/refreshToken', (req, res) => {
 // get me
 // protected route
 router.get('/me', auth, (req: CoachMeRequest, res) => {
-
   const { userId } = req;
   return Coach.findById(new ObjectId(userId))
     .select('firstName lastName email _id')
@@ -124,28 +122,27 @@ router.get('/me', auth, (req: CoachMeRequest, res) => {
 
 router.get('/getPatients', auth, (req, res) => {
   return Patient.find().then((patients) => {
-
     return res.status(200).json(patients);
   });
 });
 
-
 router.get('/search', auth, async (req, res) => {
-  const {query} = req.query;
+  const { query } = req.query;
   Coach.aggregate([
-    {$project: { 'name' : { $concat : [ '$firstName', ' ', '$lastName' ] } }},
-    { $match: {
-      'name': {
-        $regex: query,
-        $options: 'i'
-      }
-    }}
+    { $project: { name: { $concat: ['$firstName', ' ', '$lastName'] } } },
+    {
+      $match: {
+        name: {
+          $regex: query,
+          $options: 'i',
+        },
+      },
+    },
   ]).exec((err, result) => {
     return res.status(200).json({
-      coaches: result
+      coaches: result,
     });
   });
 });
-
 
 export default router;

@@ -1,4 +1,4 @@
-import {parseTwilioFromNumber} from '../../src/utils/config';
+import { parseTwilioFromNumber } from '../../src/utils/config';
 
 describe('parseTwilioFromNumber', () => {
   it('throws an error if no process values is set', () => {

@@ -1,8 +1,8 @@
 const containsNumber = (input: string): boolean => {
-  return (/\b\d{2}\b/.test(input) || /\b\d{3}\b/.test(input));
+  return /\b\d{2}\b/.test(input) || /\b\d{3}\b/.test(input);
 };
 
-const containsMany = (input: string):boolean => {
+const containsMany = (input: string): boolean => {
   const rex = /-?\d(?:[\d]*\.\d+|[\d]*)/g;
   let nums = 0;
   while (rex.exec(input)) {
@@ -22,31 +22,29 @@ const getNumber = (input_s: string): any => {
   }
 
   return input_s.match(/\b\d{2}\b/g);
-
 };
 
 // classify numeric user responses. We do not use spacing for the inequalities to be consistent, mostly for the mapping
 // currently, we have this as a switch statement but ultimately we want to create some sort of data structure for this as well
-const classifyNumeric = (input:string):string => {
-  const number : number = parseInt(input, 10);
+const classifyNumeric = (input: string): string => {
+  const number: number = parseInt(input, 10);
   if (number < 70) {
     return 'toolow';
   }
-  if (number >= 70 &&  number <= 79) {
+  if (number >= 70 && number <= 79) {
     return '<80';
   }
-  if (number >= 80 &&  number <= 130){
+  if (number >= 80 && number <= 130) {
     return 'green';
   }
-  if (number >= 131 && number <= 180){
+  if (number >= 131 && number <= 180) {
     return 'yellow';
   }
-  if (number >= 181 && number <= 300){
+  if (number >= 181 && number <= 300) {
     return 'red';
   }
 
   return '>=301';
-
 };
 
-export { containsNumber, getNumber, classifyNumeric, containsMany};
+export { containsNumber, getNumber, classifyNumeric, containsMany };

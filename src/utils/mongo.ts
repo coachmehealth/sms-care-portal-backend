@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { DATABASE_URI } from './config';
 
 export default function connectToDatabase(
-  cb: (err: Error) => void
+  cb: (err: Error) => void,
 ): (err: Error) => void {
   mongoose.Promise = global.Promise;
   mongoose.connect(DATABASE_URI, {
@@ -15,8 +15,8 @@ export default function connectToDatabase(
     'error',
     console.error.bind(
       console,
-      'MongoDB connection error. Please make sure MongoDB is running.'
-    )
+      'MongoDB connection error. Please make sure MongoDB is running.',
+    ),
   );
 
   mongoose.connection.once('open', () => {

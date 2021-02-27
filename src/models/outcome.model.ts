@@ -7,7 +7,7 @@ interface IOutcome extends mongoose.Document {
   patientID: number;
   phoneNumber: string;
   date: Date;
-  response: string,
+  response: string;
   value: number;
   alertType: string;
 }
@@ -18,10 +18,9 @@ const OutcomeSchema = new Schema({
   date: { type: Date, required: true },
   response: { type: String, required: true },
   value: { type: Number, required: false },
-  alertType: { type: String, required: false }
+  alertType: { type: String, required: false },
 });
 
 const Outcome = mongoose.model<IOutcome>('Outcome', OutcomeSchema);
 
 export { Outcome, IOutcome };
-

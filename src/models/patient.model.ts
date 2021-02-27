@@ -13,27 +13,31 @@ interface IPatient extends mongoose.Document {
   prefTime: number;
   messagesSent: number;
   responseCount: number;
-  reports: [{
-    data: Buffer,
-    contentType: String;
-  }];
+  reports: [
+    {
+      data: Buffer;
+      contentType: String;
+    },
+  ];
   enabled: boolean;
-}  
+}
 
 const PatientSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   coachID: { type: mongoose.Schema.Types.ObjectId },
-  coachName:{ type: String, required: true },
+  coachName: { type: String, required: true },
   language: { type: String, required: true },
   phoneNumber: { type: String, required: true },
   prefTime: { type: Number, required: true },
   messagesSent: { type: Number, required: true },
   responseCount: { type: Number, required: true },
-  reports: [{
-    data: {type: Buffer, required: true},
-    contentType: {type: String, required: true}
-  }],
+  reports: [
+    {
+      data: { type: Buffer, required: true },
+      contentType: { type: String, required: true },
+    },
+  ],
   enabled: { type: Boolean, required: true },
 });
 

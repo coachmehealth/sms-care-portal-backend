@@ -8,7 +8,7 @@ import { JWT_SECRET } from '../utils/config';
 const auth = (
   req: CoachMeRequest,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) => {
   let token = req.headers.authorization;
   if (!token)
