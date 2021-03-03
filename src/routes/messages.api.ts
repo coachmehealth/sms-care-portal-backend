@@ -26,7 +26,9 @@ cron.schedule(
           patients.forEach((patient) => {
             if (patient.enabled) {
               const messages = MessageTemplates.filter(
-                (template) => template.language === patient.language,
+                (template) =>
+                  template.language.toLowerCase() ===
+                  patient.language.toLowerCase(),
               );
               if (messages.length < 1) {
                 console.log(
