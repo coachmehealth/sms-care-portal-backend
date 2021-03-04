@@ -1,61 +1,63 @@
 /* eslint-disable no-shadow */
 import express from 'express';
-var cron = require('node-cron');
-const ObjectsToCsv = require('objects-to-csv');
+import errorHandler from './error';
 import { ObjectId } from 'mongodb';
 import auth from '../middleware/auth';
-import { Message, IMessage } from '../models/message.model';
+import { Message } from '../models/message.model';
 import { MessageTemplate, IMesssageTemplate } from '../models/messageTemplate.model';
-import { Outcome, IOutcome } from '../models/outcome.model';
+import { Outcome } from '../models/outcome.model';
 import { Patient, IPatient } from '../models/patient.model';
-
-
 import initializeScheduler from '../utils/scheduling';
-import errorHandler from './error';
+
+const cron = require('node-cron');
+
+// const ObjectsToCsv = require('objects-to-csv');
+
+
 
 const router = express.Router();
 initializeScheduler();
 
 const cycleThroughPatients = (MessageTemplates: IMesssageTemplate[], patients: IPatient[]) => {
-  for (const patient of patients) {
-    if(patient.enabled) {
+  patients.forEach(patient => {
+    if (patient.enabled) {
       const messages = MessageTemplates.filter(template => template.language === patient.language);
-      const randomVal =  Math.floor(Math.random() * (messages.length));
+      const randomVal = Math.floor(Math.random() * (messages.length));
       const message = messages[randomVal].text;
       addNewMessageForPatient(patient, message);
-    }
-  }
+    };
+  })
 }
 
 const addNewMessageForPatient = (patient: IPatient, message: string) => {
   try {
-    var date = new Date();
+    let date = new Date();
     date.setMinutes(date.getMinutes() + 1);
     const newMessage = new Message({
       patientID: new ObjectId(patient._id),
       phoneNumber: patient.phoneNumber,
-      date: date,
-      message: message,
+      date,
+      message,
       sender: 'BOT',
       sent: false
     });
     newMessage.save();
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 }
 
-//run messages every day at midnight PST
+// run messages every day at midnight PST
 cron.schedule('0 0 0 * * *', () => {
-  console.log("Running batch of schdueled messages");
+  console.log('Running batch of schdueled messages');
   Patient.find().then((patients: IPatient[]) => {
-    MessageTemplate.find({type: "Initial"}).then((MessageTemplates: IMesssageTemplate[]) => {
+    MessageTemplate.find({ type: 'Initial' }).then((MessageTemplates: IMesssageTemplate[]) => {
       cycleThroughPatients(MessageTemplates, patients);
-    })
+    });
   });
-  },{
-    scheduled: true,
-    timezone: "America/Los_Angeles"
+}, {
+  scheduled: true,
+  timezone: 'America/Los_Angeles'
 });
 
 
@@ -68,19 +70,19 @@ router.post('/newMessage', auth, async (req, res) => {
     }); 
   }
 
-  if (!req.body.patientID || req.body.patientID == ''){
+  if (!req.body.patientID || req.body.patientID === ''){
     return res.status(400).json({
       msg: 'Unable to add message: must include patient ID'
     });
   }
 
-  if (!req.body.sender || req.body.sender == ''){
+  if (!req.body.sender || req.body.sender === ''){
     return res.status(400).json({
       msg: 'Unable to add message: must include sender'
     });
   }
 
-  if (!req.body.date || req.body.date == ''){
+  if (!req.body.date || req.body.date === ''){
     return res.status(400).json({
       msg: 'Unable to add message: must include date'
     });
@@ -101,7 +103,7 @@ router.post('/newMessage', auth, async (req, res) => {
       });
     });
   } 
-    
+  return null;  
 });
 
 
@@ -113,13 +115,13 @@ router.post('/newOutcome', auth, async (req, res) => {
     });
   }
 
-  if (req.body.patientID == ''){
+  if (req.body.patientID === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include patient ID'
     });
   }
 
-  if (req.body.language == ''){
+  if (req.body.language === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include language'
     });
@@ -149,13 +151,13 @@ router.post('/scheduledMessage', auth, async (req, res) => {
     });
   }
 
-  if (req.body.patientID == ''){
+  if (req.body.patientID === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include patient ID'
     });
   }
 
-  if (req.body.language == ''){
+  if (req.body.language === ''){
     return res.status(400).json({
       msg: 'Unable to add outcome: must include language'
     });
@@ -179,12 +181,12 @@ router.post('/scheduledMessage', auth, async (req, res) => {
 
 router.get('/allOutcomes', auth, async (req, res) => {
   return Outcome.find()
-  .then((outcomesList) => {
-    Patient.find().then((patientList) => {
-      res.status(200).send({outcomes: outcomesList, patients: patientList});
-    });
+    .then((outcomesList) => {
+      Patient.find().then((patientList) => {
+        res.status(200).send({ outcomes: outcomesList, patients: patientList });
+      });
 
-  })
-  .catch((err) => errorHandler(res, err.msg))
+    })
+    .catch((err) => errorHandler(res, err.msg));
 });
 export default router;
