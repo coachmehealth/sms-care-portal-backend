@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import express from 'express';
-import errorHandler from './error';
 import { ObjectId } from 'mongodb';
+import errorHandler from './error';
 import auth from '../middleware/auth';
 import { Message } from '../models/message.model';
 import { MessageTemplate, IMesssageTemplate } from '../models/messageTemplate.model';
@@ -20,7 +20,7 @@ initializeScheduler();
 
 const addNewMessageForPatient = (patient: IPatient, message: string) => {
   try {
-    let date = new Date();
+    const date = new Date();
     date.setMinutes(date.getMinutes() + 1);
     const newMessage = new Message({
       patientID: new ObjectId(patient._id),
@@ -34,7 +34,7 @@ const addNewMessageForPatient = (patient: IPatient, message: string) => {
   } catch (err) {
     console.error(err);
   }
-}
+};
 
 const cycleThroughPatients = (MessageTemplates: IMesssageTemplate[], patients: IPatient[]) => {
   patients.forEach(patient => {
@@ -43,9 +43,9 @@ const cycleThroughPatients = (MessageTemplates: IMesssageTemplate[], patients: I
       const randomVal = Math.floor(Math.random() * (messages.length));
       const message = messages[randomVal].text;
       addNewMessageForPatient(patient, message);
-    };
-  })
-}
+    }
+  });
+};
 
 // run messages every day at midnight PST
 cron.schedule('0 0 0 * * *', () => {
