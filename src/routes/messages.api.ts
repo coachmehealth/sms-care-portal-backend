@@ -18,17 +18,6 @@ const cron = require('node-cron');
 const router = express.Router();
 initializeScheduler();
 
-const cycleThroughPatients = (MessageTemplates: IMesssageTemplate[], patients: IPatient[]) => {
-  patients.forEach(patient => {
-    if (patient.enabled) {
-      const messages = MessageTemplates.filter(template => template.language === patient.language);
-      const randomVal = Math.floor(Math.random() * (messages.length));
-      const message = messages[randomVal].text;
-      addNewMessageForPatient(patient, message);
-    };
-  })
-}
-
 const addNewMessageForPatient = (patient: IPatient, message: string) => {
   try {
     let date = new Date();
@@ -45,6 +34,17 @@ const addNewMessageForPatient = (patient: IPatient, message: string) => {
   } catch (err) {
     console.error(err);
   }
+}
+
+const cycleThroughPatients = (MessageTemplates: IMesssageTemplate[], patients: IPatient[]) => {
+  patients.forEach(patient => {
+    if (patient.enabled) {
+      const messages = MessageTemplates.filter(template => template.language === patient.language);
+      const randomVal = Math.floor(Math.random() * (messages.length));
+      const message = messages[randomVal].text;
+      addNewMessageForPatient(patient, message);
+    };
+  })
 }
 
 // run messages every day at midnight PST
