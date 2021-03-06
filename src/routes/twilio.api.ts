@@ -78,7 +78,7 @@ router.post('/reply', async (req, res) => {
 
   const incomingMessage = new Message({
     sent: true,
-    phoneNumber: req.body.To,
+    phoneNumber: req.body.From,
     patientID: patient._id,
     message: inboundMessage,
     sender: 'PATIENT',
@@ -91,7 +91,7 @@ router.post('/reply', async (req, res) => {
 
   if (parsedResponse.glucoseReading) {
     const outcome = new Outcome({
-      phoneNumber: req.body.From,
+      phoneNumber: fromPhoneNumber,
       patientID: patient._id,
       response: inboundMessage,
       value: parsedResponse.glucoseReading.score,
@@ -106,7 +106,7 @@ router.post('/reply', async (req, res) => {
 
   const outgoingMessage = new Message({
     sent: true,
-    phoneNumber: req.body.To,
+    phoneNumber: fromPhoneNumber,
     patientID: patient._id, // lost on this
     message: responseMessage,
     sender: 'BOT',
