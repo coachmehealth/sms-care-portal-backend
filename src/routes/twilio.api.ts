@@ -1,6 +1,8 @@
 /* eslint-disable radix */
 import express from 'express';
 import { ObjectId } from 'mongodb';
+import twilio from 'twilio';
+import bodyParser from 'body-parser';
 import {
   containsNumber,
   getNumber,
@@ -20,10 +22,8 @@ import { Outcome } from '../models/outcome.model';
 import { Patient } from '../models/patient.model';
 import auth from '../middleware/auth';
 
-const { MessagingResponse } = require('twilio').twiml;
-
-const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-const bodyParser = require('body-parser');
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+const { MessagingResponse } = twilio.twiml;
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -111,7 +111,7 @@ router.post('/sendMessage', auth, (req, res) => {
   const patientID = new ObjectId(req.body.patientID);
   const date = new Date();
 
-  twilio.messages.create({
+  twilioClient.messages.create({
     body: content,
     from: TWILIO_FROM_NUMBER,
     to: recept,
