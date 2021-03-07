@@ -4,7 +4,10 @@ import { ObjectId } from 'mongodb';
 import errorHandler from './error';
 import auth from '../middleware/auth';
 import { Message } from '../models/message.model';
-import { MessageTemplate, IMesssageTemplate } from '../models/messageTemplate.model';
+import {
+  MessageTemplate,
+  IMesssageTemplate,
+} from '../models/messageTemplate.model';
 import { Outcome } from '../models/outcome.model';
 import { Patient, IPatient } from '../models/patient.model';
 import initializeScheduler from '../utils/scheduling';
@@ -36,11 +39,16 @@ const addNewMessageForPatient = (patient: IPatient, message: string) => {
   }
 };
 
-const cycleThroughPatients = (MessageTemplates: IMesssageTemplate[], patients: IPatient[]) => {
-  patients.forEach(patient => {
+const cycleThroughPatients = (
+  MessageTemplates: IMesssageTemplate[],
+  patients: IPatient[],
+) => {
+  patients.forEach((patient) => {
     if (patient.enabled) {
-      const messages = MessageTemplates.filter(template => template.language === patient.language);
-      const randomVal = Math.floor(Math.random() * (messages.length));
+      const messages = MessageTemplates.filter(
+        (template) => template.language === patient.language,
+      );
+      const randomVal = Math.floor(Math.random() * messages.length);
       const message = messages[randomVal].text;
       addNewMessageForPatient(patient, message);
     }
