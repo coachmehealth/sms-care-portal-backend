@@ -21,7 +21,18 @@ const cron = require('node-cron');
 const router = express.Router();
 initializeScheduler();
 
-const addNewMessageForPatient = (patient: IPatient, message: string) => {
+const filterMessages = (
+  patient: IPatient,
+  messageTemplates: IMesssageTemplate[],
+) => {
+  const messages = messageTemplates.filter(
+    (template) =>
+      template.language.toLowerCase() === patient.language.toLowerCase(),
+  );
+  return messages;
+};
+
+const addNewMessageForPatient = async (patient: IPatient, message: string) => {
   try {
     const date = new Date();
     date.setMinutes(date.getMinutes() + 1);
@@ -31,9 +42,9 @@ const addNewMessageForPatient = (patient: IPatient, message: string) => {
       date,
       message,
       sender: 'BOT',
-      sent: false
+      sent: false,
     });
-    newMessage.save();
+    await newMessage.save();
   } catch (err) {
     console.error(err);
   }
@@ -45,28 +56,34 @@ const cycleThroughPatients = (
 ) => {
   patients.forEach((patient) => {
     if (patient.enabled) {
-      const messages = MessageTemplates.filter(
-        (template) => template.language === patient.language,
-      );
-      const randomVal = Math.floor(Math.random() * messages.length);
-      const message = messages[randomVal].text;
-      addNewMessageForPatient(patient, message);
+      const messages = filterMessages(patient, MessageTemplates);
+      if (messages.length > 0) {
+        const randomVal = Math.floor(Math.random() * messages.length);
+        const message = messages[randomVal].text;
+        addNewMessageForPatient(patient, message);
+      }
     }
   });
 };
 
 // run messages every day at midnight PST
-cron.schedule('0 0 0 * * *', () => {
-  console.log('Running batch of schdueled messages');
-  Patient.find().then((patients: IPatient[]) => {
-    MessageTemplate.find({ type: 'Initial' }).then((MessageTemplates: IMesssageTemplate[]) => {
-      cycleThroughPatients(MessageTemplates, patients);
+cron.schedule(
+  '0 0 0 * * *',
+  () => {
+    console.log('Running batch of schdueled messages');
+    Patient.find().then((patients: IPatient[]) => {
+      MessageTemplate.find({ type: 'Initial' }).then(
+        (MessageTemplates: IMesssageTemplate[]) => {
+          cycleThroughPatients(MessageTemplates, patients);
+        },
+      );
     });
-  });
-}, {
-  scheduled: true,
-  timezone: 'America/Los_Angeles'
-});
+  },
+  {
+    scheduled: true,
+    timezone: 'America/Los_Angeles',
+  },
+);
 
 
 
