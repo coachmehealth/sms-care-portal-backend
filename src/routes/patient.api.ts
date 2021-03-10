@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
 import express from 'express';
 import { Outcome } from '../models/outcome.model';
-import { Patient } from '../models/patient.model';
+import { Patient, PatientForPhoneNumber } from '../models/patient.model';
 import auth from '../middleware/auth';
 import errorHandler from './error';
 import { Message } from '../models/message.model';
@@ -19,6 +19,13 @@ router.post('/add', auth, async (req, res) => {
   ) {
     return res.status(400).json({
       msg: 'Unable to add patient: invalid phone number',
+    });
+  }
+
+  if (await PatientForPhoneNumber(req.body.phoneNumber)) {
+    return res.status(400).json({
+      msg:
+        'Unable to add patient: patient already exists for given phone number',
     });
   }
 

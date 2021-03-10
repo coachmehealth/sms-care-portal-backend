@@ -43,4 +43,10 @@ const PatientSchema = new Schema({
 
 const Patient = mongoose.model<IPatient>('Patient', PatientSchema);
 
-export { Patient, IPatient };
+const PatientForPhoneNumber = async (
+  phoneNumber: string,
+): Promise<IPatient | null> => {
+  return Patient.findOne({ phoneNumber });
+};
+
+export { Patient, PatientForPhoneNumber, IPatient };
