@@ -3,7 +3,7 @@ import express from 'express';
 import { Outcome } from '../models/outcome.model';
 import { Patient, PatientForPhoneNumber } from '../models/patient.model';
 import auth from '../middleware/auth';
-import errorHandler from './error';
+import errorHandler, { Error } from './error';
 import { Message } from '../models/message.model';
 
 const { ObjectId } = require('mongoose').Types;
@@ -97,21 +97,6 @@ router.post('/add', auth, async (req, res) => {
   });
 });
 
-// maybe make this not accessible or something not sure how
-router.get('/getPatient/:id', auth, (req, res) => {
-  Patient.findOne({
-    _id: req.params.id,
-  })
-    .then((patient) => {
-      res.status(200).json(patient);
-    })
-    .catch(() => {
-      res.status(404).json({
-        msg: 'Unable to increase response count: patient ID not found',
-      });
-    });
-});
-
 router.put('/increaseResponseCount/:id', auth, (req, res) => {
   if (
     !req.body.phoneNumber ||
@@ -175,7 +160,7 @@ router.get('/getPatient/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Patient.findById(new ObjectId(id))
     .then((patient) => {
-      if (!patient) return errorHandler(res, 'No patient found!');
+      if (!patient) return errorHandler(res, 'No patient found!', Error.RESOURCE_NOT_FOUND);
       return res.status(200).json(patient);
     })
     .catch((err) => errorHandler(res, err.message));
