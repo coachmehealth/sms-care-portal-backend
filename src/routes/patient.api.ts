@@ -161,7 +161,7 @@ router.get('/getPatientOutcomes/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Outcome.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList || outcomeList.length === 0)
+      if (!outcomeList)
         return errorHandler(res, 'No outcomes found!');
 
       return res
@@ -185,7 +185,7 @@ router.get('/getPatientMessages/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Message.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList || outcomeList.length === 0)
+      if (!outcomeList)
         return errorHandler(res, 'No outcomes found!');
       return res.status(200).json(outcomeList);
     })
