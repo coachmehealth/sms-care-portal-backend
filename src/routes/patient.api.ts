@@ -3,7 +3,7 @@ import express from 'express';
 import { Outcome } from '../models/outcome.model';
 import { Patient, PatientForPhoneNumber } from '../models/patient.model';
 import auth from '../middleware/auth';
-import errorHandler, { Error } from './error';
+import errorHandler from './error';
 import { Message } from '../models/message.model';
 
 const { ObjectId } = require('mongoose').Types;
@@ -160,7 +160,7 @@ router.get('/getPatient/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Patient.findById(new ObjectId(id))
     .then((patient) => {
-      if (!patient) return errorHandler(res, 'No patient found!', Error.RESOURCE_NOT_FOUND);
+      if (!patient) return errorHandler(res, 'No patient found!');
       return res.status(200).json(patient);
     })
     .catch((err) => errorHandler(res, err.message));
