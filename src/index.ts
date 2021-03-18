@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import socket from 'socket.io';
-import expressStatusMonitor from 'express-status-monitor';
 import connectToDatabase from './utils/mongo';
 import './utils/config';
 
@@ -44,5 +43,3 @@ io.on('connection', (soc) => {
 });
 
 app.set('socketio', io);
-
-app.use(expressStatusMonitor({ websocket: io }));
