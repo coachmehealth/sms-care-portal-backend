@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import socket from 'socket.io';
-import expressStatusMonitor from 'express-status-monitor';
 import connectToDatabase from './utils/mongo';
 import './utils/config';
 
@@ -11,6 +10,7 @@ import messageRouter from './routes/messages.api';
 import coachRouter from './routes/coach.auth';
 import twilioRouter from './routes/twilio.api';
 import messageTemplateRouter from './routes/messageTemplate.api';
+import RequireHttps from './middleware/require_https';
 
 const app = express();
 
@@ -22,6 +22,7 @@ app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+app.use(RequireHttps);
 
 // API Routes
 app.use('/api/patients', patientRouter);
@@ -44,5 +45,3 @@ io.on('connection', (soc) => {
 });
 
 app.set('socketio', io);
-
-app.use(expressStatusMonitor({ websocket: io }));

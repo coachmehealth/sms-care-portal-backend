@@ -68,7 +68,11 @@ const cycleThroughPatients = (
 
 // run messages every day at midnight PST
 cron.schedule(
+<<<<<<< HEAD
   '0 0 0 * * *',
+=======
+  '0 0 5 * * *',
+>>>>>>> master
   () => {
     console.log('Running batch of schdueled messages');
     Patient.find().then((patients: IPatient[]) => {

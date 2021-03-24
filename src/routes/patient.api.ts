@@ -97,21 +97,6 @@ router.post('/add', auth, async (req, res) => {
   });
 });
 
-// maybe make this not accessible or something not sure how
-router.get('/getPatient/:id', auth, (req, res) => {
-  Patient.findOne({
-    _id: req.params.id,
-  })
-    .then((patient) => {
-      res.status(200).json(patient);
-    })
-    .catch(() => {
-      res.status(404).json({
-        msg: 'Unable to increase response count: patient ID not found',
-      });
-    });
-});
-
 router.put('/increaseResponseCount/:id', auth, (req, res) => {
   if (
     !req.body.phoneNumber ||
@@ -161,7 +146,7 @@ router.get('/getPatientOutcomes/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Outcome.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList || outcomeList.length === 0)
+      if (!outcomeList)
         return errorHandler(res, 'No outcomes found!');
 
       return res
@@ -185,7 +170,7 @@ router.get('/getPatientMessages/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Message.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList || outcomeList.length === 0)
+      if (!outcomeList)
         return errorHandler(res, 'No outcomes found!');
       return res.status(200).json(outcomeList);
     })
