@@ -16,8 +16,6 @@ const cron = require('node-cron');
 
 // const ObjectsToCsv = require('objects-to-csv');
 
-
-
 const router = express.Router();
 initializeScheduler();
 
@@ -29,7 +27,11 @@ const filterMessages = (
     (template) =>
       template.language.toLowerCase() === patient.language.toLowerCase(),
   );
-  return messages;
+  if (messages.length > 0) {
+    const randomVal = Math.floor(Math.random() * messages.length);
+    return messages[randomVal].text;
+  }
+  return undefined;
 };
 
 const addNewMessageForPatient = async (patient: IPatient, message: string) => {
@@ -56,11 +58,9 @@ const cycleThroughPatients = (
 ) => {
   patients.forEach((patient) => {
     if (patient.enabled) {
-      const messages = filterMessages(patient, MessageTemplates);
-      if (messages.length > 0) {
-        const randomVal = Math.floor(Math.random() * messages.length);
-        const message = messages[randomVal].text;
-        addNewMessageForPatient(patient, message);
+      const templateToSend = filterMessages(patient, MessageTemplates);
+      if (templateToSend) {
+        addNewMessageForPatient(patient, templateToSend);
       }
     }
   });
