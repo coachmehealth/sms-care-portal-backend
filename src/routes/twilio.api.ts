@@ -14,6 +14,7 @@ import {
 import { Outcome } from '../models/outcome.model';
 import { PatientForPhoneNumber } from '../models/patient.model';
 import auth from '../middleware/auth';
+import ensure_signed from '../middleware/ensure_signed';
 import { parseInboundPatientMessage } from '../domain/message_parsing';
 import { responseForParsedMessage } from '../domain/glucose_reading_responses';
 
@@ -59,7 +60,7 @@ router.post('/sendMessage', auth, (req, res) => {
 });
 
 // this route receives and parses the message from one user, then responds accordingly with the appropriate output
-router.post('/reply', async (req, res) => {
+router.post('/reply', ensure_signed, async (req, res) => {
   const twiml = new MessagingResponse();
 
   const inboundMessage = req.body.Body || 'Invalid Text (image)';
