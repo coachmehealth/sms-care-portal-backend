@@ -7,7 +7,7 @@ import {
   getWeeklyList,
   getMessageTemplate,
 } from './utils';
-import { runCronSchedules } from './cronSchedules';
+import runCronSchedules from './cronSchedules';
 
 
 const cron = require('node-cron');

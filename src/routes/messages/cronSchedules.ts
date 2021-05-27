@@ -1,7 +1,8 @@
 import { dailyMidnightMessages, weeklyReport } from './utils';
+
 const cron = require('node-cron');
 
-export const runCronSchedules = () => {
+const runCronSchedules = () => {
   // run messages every day at midnight PST
   cron.schedule('0 0 5 * * *', () => dailyMidnightMessages(), {
     scheduled: true,
@@ -13,9 +14,6 @@ export const runCronSchedules = () => {
     scheduled: true,
     timezone: 'America/Los_Angeles',
   });
+};
 
-  cron.schedule('* * * * *', () => console.log("every min ", new Date()), {
-    scheduled: true,
-    timezone: 'America/Los_Angeles',
-  });
-}
+export default runCronSchedules;

@@ -5,7 +5,7 @@ import auth from '../../middleware/auth';
 import { Message } from '../../models/message.model';
 import { Outcome } from '../../models/outcome.model';
 import { Patient } from '../../models/patient.model';
-import { runCronSchedules } from './cronSchedules';
+import runCronSchedules from './cronSchedules';
 
 import initializeScheduler from '../../utils/scheduling';
 import errorHandler from '../error';
