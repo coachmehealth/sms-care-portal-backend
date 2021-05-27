@@ -9,23 +9,6 @@ router.post('/newTemplate', auth, async (req, res) => {
   if (!req.body.messageTxt || req.body.messageTxt === '') {
     return res.status(400).send('Please Enter Message Text!');
   }
-  if (req.body.image == null) {
-    const newMessageTemplate = new MessageTemplate({
-      language: req.body.language,
-      text: req.body.messageTxt,
-      type: req.body.type,
-    });
-    return newMessageTemplate
-      .save()
-      .then(() => {
-        res.status(200).json({
-          success: true,
-        });
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
   const newMessageTemplate = new MessageTemplate({
     language: req.body.language,
     text: req.body.messageTxt,
