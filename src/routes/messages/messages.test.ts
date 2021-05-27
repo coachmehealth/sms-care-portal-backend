@@ -7,6 +7,8 @@ import {
   getWeeklyList,
   getMessageTemplate,
 } from './utils';
+import { runCronSchedules } from './cronSchedules';
+
 
 const cron = require('node-cron');
 
@@ -81,7 +83,7 @@ describe('Message utils', () => {
     cron.schedule.mockImplementation(async (frequency: any, callback: any) =>
       callback(),
     );
-    require('./messages.api');
+    runCronSchedules();
     expect(logSpy).toBeCalledWith('Running batch of scheduled messages');
     expect(cron.schedule).toBeCalledWith('0 0 5 * * *', expect.any(Function), {
       scheduled: true,

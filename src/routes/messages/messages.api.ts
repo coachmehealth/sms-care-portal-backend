@@ -5,27 +5,17 @@ import auth from '../../middleware/auth';
 import { Message } from '../../models/message.model';
 import { Outcome } from '../../models/outcome.model';
 import { Patient } from '../../models/patient.model';
-import { dailyMidnightMessages, weeklyReport } from './utils';
+import { runCronSchedules } from './cronSchedules';
 
 import initializeScheduler from '../../utils/scheduling';
 import errorHandler from '../error';
 
-const cron = require('node-cron');
+
 
 const router = express.Router();
 initializeScheduler();
 
-// run messages every day at midnight PST
-cron.schedule('0 0 5 * * *', () => dailyMidnightMessages(), {
-  scheduled: true,
-  timezone: 'America/Los_Angeles',
-});
-
-// Send report every monday at 11 AM. PST.
-cron.schedule('0 11 * * 1', () => weeklyReport(), {
-  scheduled: true,
-  timezone: 'America/Los_Angeles',
-});
+runCronSchedules();
 
 router.post('/newMessage', auth, async (req, res) => {
   // validate phone number
