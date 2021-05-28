@@ -2,6 +2,7 @@ import express from 'express';
 import { ObjectId } from 'mongodb';
 import auth from '../middleware/auth';
 import { MessageTemplate } from '../models/messageTemplate.model';
+import multer from '../utils/multer';
 
 const router = express.Router();
 

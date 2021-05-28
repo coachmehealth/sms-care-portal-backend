@@ -4,7 +4,6 @@ import cors from 'cors';
 import socket from 'socket.io';
 import connectToDatabase from './utils/mongo';
 import './utils/config';
-
 import patientRouter from './routes/patient.api';
 import messageRouter from './routes/messages.api';
 import coachRouter from './routes/coach.auth';
@@ -19,10 +18,11 @@ connectToDatabase((err) => {
 });
 
 app.set('port', process.env.PORT || 3000);
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '16mb' }));
+app.use(bodyParser.urlencoded({ limit: '16mb', extended: true }));
 app.use(cors());
 app.use(RequireHttps);
+app.use(express.json());
 
 // API Routes
 app.use('/api/patients', patientRouter);
@@ -45,3 +45,8 @@ io.on('connection', (soc) => {
 });
 
 app.set('socketio', io);
+
+// Folder where files are stored
+const path = require('path');
+
+app.use('/uploads', express.static(path.resolve('uploads')));

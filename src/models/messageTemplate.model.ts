@@ -13,6 +13,7 @@ const MessageTemplateSchema = new Schema({
   text: { type: String, required: true },
   language: { type: String, required: true },
   type: { type: String, required: true },
+  media: { type: String, required: false },
 });
 
 const MessageTemplate = mongoose.model<IMesssageTemplate>(
