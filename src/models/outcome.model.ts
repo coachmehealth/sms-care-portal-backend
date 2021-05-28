@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 interface IOutcome extends mongoose.Document {
   _id: string;
-  patientID: number;
+  patientID: string;
   phoneNumber: string;
   date: Date;
   response: string;

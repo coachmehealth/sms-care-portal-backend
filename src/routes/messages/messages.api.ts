@@ -1,66 +1,21 @@
 /* eslint-disable no-shadow */
 import express from 'express';
 import { ObjectId } from 'mongodb';
-import auth from '../middleware/auth';
-import { Message } from '../models/message.model';
-import { MessageTemplate } from '../models/messageTemplate.model';
-import { Outcome } from '../models/outcome.model';
-import { Patient } from '../models/patient.model';
+import auth from '../../middleware/auth';
+import { Message } from '../../models/message.model';
+import { Outcome } from '../../models/outcome.model';
+import { Patient } from '../../models/patient.model';
+import runCronSchedules from './cronSchedules';
 
-import initializeScheduler from '../utils/scheduling';
-import errorHandler from './error';
+import initializeScheduler from '../../utils/scheduling';
+import errorHandler from '../error';
 
-const cron = require('node-cron');
+
 
 const router = express.Router();
 initializeScheduler();
 
-// run messages every day at midnight PST
-cron.schedule(
-  '0 0 5 * * *',
-  () => {
-    console.log('Running batch of schdueled messages');
-    Patient.find().then((patients) => {
-      MessageTemplate.find({ type: 'Initial' })
-        .then((MessageTemplates) => {
-          patients.forEach((patient) => {
-            if (patient.enabled) {
-              const messages = MessageTemplates.filter(
-                (template) =>
-                  template.language.toLowerCase() ===
-                  patient.language.toLowerCase(),
-              );
-              if (messages.length < 1) {
-                console.log(
-                  'Unable to find message appropriate for member = ',
-                  patient._id,
-                );
-                return;
-              }
-              const randomVal = Math.floor(Math.random() * messages.length);
-              const message = messages[randomVal].text;
-              const date = new Date();
-              date.setMinutes(date.getMinutes() + 1);
-              const newMessage = new Message({
-                patientID: new ObjectId(patient._id),
-                phoneNumber: patient.phoneNumber,
-                date,
-                message,
-                sender: 'BOT',
-                sent: false,
-              });
-              newMessage.save();
-            }
-          });
-        })
-        .catch((err) => console.log(err));
-    });
-  },
-  {
-    scheduled: true,
-    timezone: 'America/Los_Angeles',
-  },
-);
+runCronSchedules();
 
 router.post('/newMessage', auth, async (req, res) => {
   // validate phone number
