@@ -14,7 +14,7 @@ class AuthError extends Error {
 
 const generateAccessToken = (coach: ICoach): string =>
   sign(_.omit(coach.toObject(), 'password'), JWT_SECRET, {
-    expiresIn: '5 m', // for testing purposes
+    expiresIn: process.env.EXPIREACCESSTOKEN || '5 m', // for testing purposes
   });
 
 const generateRefreshToken = (coach: ICoach): any => {

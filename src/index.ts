@@ -8,7 +8,7 @@ import patientRouter from './routes/patient.api';
 import messageRouter from './routes/messages/messages.api';
 import coachRouter from './routes/coach.auth';
 import twilioRouter from './routes/twilio.api';
-import messageTemplateRouter from './routes/messageTemplate.api';
+import messageTemplateRouter from './routes/templates/messageTemplate.api';
 import RequireHttps from './middleware/require_https';
 
 const app = express();
@@ -50,3 +50,5 @@ app.set('socketio', io);
 const path = require('path');
 
 app.use('/uploads', express.static(path.resolve('uploads')));
+
+export default app;

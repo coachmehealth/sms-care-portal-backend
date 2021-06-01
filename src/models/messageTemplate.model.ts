@@ -7,6 +7,7 @@ interface IMesssageTemplate extends mongoose.Document {
   text: string;
   language: string;
   type: string;
+  media?: string;
 }
 
 const MessageTemplateSchema = new Schema({
