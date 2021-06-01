@@ -10,7 +10,9 @@ import coachRouter from './routes/coach.auth';
 import twilioRouter from './routes/twilio.api';
 import messageTemplateRouter from './routes/templates/messageTemplate.api';
 import RequireHttps from './middleware/require_https';
+
 const path = require('path');
+
 const app = express();
 
 connectToDatabase((err) => {

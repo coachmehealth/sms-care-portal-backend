@@ -7,6 +7,7 @@ interface IMesssageTemplate extends mongoose.Document {
   text: string;
   language: string;
   type: string;
+  creator: string;
   media?: string;
 }
 
@@ -14,6 +15,7 @@ const MessageTemplateSchema = new Schema({
   text: { type: String, required: true },
   language: { type: String, required: true },
   type: { type: String, required: true },
+  creator: { type: String, required: true },
   media: { type: String, required: false },
 });
 
