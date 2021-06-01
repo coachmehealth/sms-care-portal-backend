@@ -10,7 +10,7 @@ import coachRouter from './routes/coach.auth';
 import twilioRouter from './routes/twilio.api';
 import messageTemplateRouter from './routes/templates/messageTemplate.api';
 import RequireHttps from './middleware/require_https';
-
+const path = require('path');
 const app = express();
 
 connectToDatabase((err) => {
@@ -30,6 +30,7 @@ app.use('/api/coaches', coachRouter);
 app.use('/api/messages', messageRouter);
 app.use('/api/twilio', twilioRouter);
 app.use('/api/messageTemplate', messageTemplateRouter);
+app.use('/uploads', express.static(path.resolve('uploads')));
 
 const server = app.listen(app.get('port'), () => {
   console.log(`Listening on port ${app.get('port')} 🚀`);
@@ -45,10 +46,5 @@ io.on('connection', (soc) => {
 });
 
 app.set('socketio', io);
-
-// Folder where files are stored
-const path = require('path');
-
-app.use('/uploads', express.static(path.resolve('uploads')));
 
 export default app;

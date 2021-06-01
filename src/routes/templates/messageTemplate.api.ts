@@ -18,7 +18,7 @@ router.post('/newTemplate', auth, multer.single('image'), async (req: Request, r
     language: req.body.language,
     text: req.body.messageTxt,
     type: req.body.type,
-    media: req.file.path,
+    media: req?.file?.path,
   });
   return newMessageTemplate
     .save()
