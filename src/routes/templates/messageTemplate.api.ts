@@ -16,7 +16,7 @@ router.post(
     if (!req.body.messageTxt || req.body.messageTxt === '') {
       return res.status(400).send('Please Enter Message Text!');
     }
-    const publicBoolean = req.body.public === "true" ? true : false;
+    const publicBoolean = req.body.public === 'true';
     const newMessageTemplate = new MessageTemplate({
       language: req.body.language,
       text: req.body.messageTxt,
