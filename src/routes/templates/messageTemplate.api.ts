@@ -16,11 +16,13 @@ router.post(
     if (!req.body.messageTxt || req.body.messageTxt === '') {
       return res.status(400).send('Please Enter Message Text!');
     }
+    const publicBoolean = req.body.public === "true" ? true : false;
     const newMessageTemplate = new MessageTemplate({
       language: req.body.language,
       text: req.body.messageTxt,
       type: req.body.type,
       creator: req.body.creator,
+      public: publicBoolean,
       media: req?.file?.path,
     });
     return newMessageTemplate
@@ -63,7 +65,7 @@ router.get('/templates', auth, async (req: Request, res: Response) => {
 
 router.get('/templates/:creator', auth, async (req: Request, res: Response) => {
   return MessageTemplate.find({
-    creator: req.params.creator
+    $or: [{ creator: req.params.creator }, { public: true }]
   })
     .then((messageTemplates) => {
       res.status(200).json(messageTemplates);
