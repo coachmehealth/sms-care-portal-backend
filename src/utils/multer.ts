@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
   destination: 'uploads',
   filename: (req, file, cb) => {
     const extension = path.extname(file.originalname);
-    cb(null, `${file.originalname  }-uudid-${  uuidV4()  }${extension}`);
+    cb(null, `${file.originalname}-uudid-${uuidV4()}${extension}`);
   },
 });
 
@@ -23,9 +23,6 @@ const fileFilter = (
     'image/png',
     'image/gif',
     'application/pdf',
-    'video/mpeg',
-    'video/webm',
-    'video/mp4',
   ];
   if (allowedFileTypes.includes(file.mimetype)) {
     cb(null, true);
