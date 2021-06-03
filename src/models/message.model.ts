@@ -8,6 +8,7 @@ interface IMessage extends mongoose.Document {
   patientID: number;
   sender: string;
   message: string;
+  receivedWith: string;
   image: {
     data: Buffer;
     contentType: String;
@@ -21,6 +22,7 @@ const MessageSchema = new Schema({
   phoneNumber: { type: String, required: true },
   message: { type: String, required: true },
   sender: { type: String, required: true },
+  receivedWith: {type: String, required: false},
   image: {
     data: { type: mongoose.Schema.Types.Buffer, required: false },
     contentType: { type: String, required: false },

@@ -3,14 +3,12 @@ import express from 'express';
 import { ObjectId } from 'mongodb';
 import twilio from 'twilio';
 import bodyParser from 'body-parser';
-
 import { Message } from '../models/message.model';
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_FROM_NUMBER,
 } from '../utils/config';
-
 import { Outcome } from '../models/outcome.model';
 import { PatientForPhoneNumber } from '../models/patient.model';
 import auth from '../middleware/auth';
@@ -58,7 +56,8 @@ router.post('/sendMessage', auth, (req, res) => {
     .catch((err) => console.log(err));
 });
 
-// this route receives and parses the message from one user, then responds accordingly with the appropriate output
+// this route receives and parses the message from one user, then responds accordingly with the appropriate output.
+// This route is used for the glucose tracker.
 router.post('/reply', async (req, res) => {
   const twiml = new MessagingResponse();
 
@@ -81,6 +80,7 @@ router.post('/reply', async (req, res) => {
     phoneNumber: req.body.From,
     patientID: patient._id,
     message: inboundMessage,
+    receivedWith: "Glucose",
     sender: 'PATIENT',
     date,
   });
@@ -120,6 +120,38 @@ router.post('/reply', async (req, res) => {
 
   res.writeHead(200, { 'Content-Type': 'text/xml' });
   res.end(twiml.message(responseMessage).toString());
+});
+
+router.post('/receive', async (req, res) => {
+  const twiml = new MessagingResponse();
+
+  const inboundMessage = req.body.Body || 'Invalid Text (image)';
+  const fromPhoneNumber = req.body.From.slice(2);
+  const date = new Date();
+
+  const patient = await PatientForPhoneNumber(fromPhoneNumber);
+
+  if (!patient) {
+    const twilioResponse = twiml.message(UNRECOGNIZED_PATIENT_RESPONSE);
+
+    res.writeHead(200, { 'Content-Type': 'text/xml' });
+    res.end(twilioResponse.toString());
+    return;
+  }
+
+  const incomingMessage = new Message({
+    sent: true,
+    phoneNumber: req.body.From,
+    patientID: patient._id,
+    message: inboundMessage,
+    sender: 'PATIENT',
+    date,
+  });
+
+  await incomingMessage.save();
+
+  res.writeHead(200, { 'Content-Type': 'text/xml' });
+  res.end();
 });
 
 export default router;
