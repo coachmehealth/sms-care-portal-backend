@@ -17,6 +17,7 @@ const getPatientIdFromNumber = (number: any) => {
   return Patient.findOne({ phoneNumber: number })
     .select('_id')
     .then((patientId) => {
+      // eslint-disable-next-line no-console
       if (!patientId) console.log(`'No patient found for ${number}!'`);
       return patientId;
     })
@@ -37,7 +38,12 @@ const sendMessage = (msg: IMessage) => {
     { _id: msg.id },
     {
       sent: true,
-    }
+    },
+    { new: false },
+    (error) => {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    },
   );
 
   // updates patient's sentmessages
@@ -45,6 +51,7 @@ const sendMessage = (msg: IMessage) => {
     const patientId = new ObjectId(id._id);
     Patient.findByIdAndUpdate(patientId, {
       $inc: { messagesSent: 1 },
+      // eslint-disable-next-line no-console
     }).catch((err) => console.log(err));
   });
 };

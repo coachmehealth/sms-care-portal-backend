@@ -1,14 +1,14 @@
 /* eslint-disable radix */
 import express from 'express';
 import bodyParser from 'body-parser';
+import twilio from 'twilio';
 import { Outcome } from '../../models/outcome.model';
 import { PatientForPhoneNumber } from '../../models/patient.model';
 import auth from '../../middleware/auth';
 import { parseInboundPatientMessage } from '../../domain/message_parsing';
 import { responseForParsedMessage } from '../../domain/glucose_reading_responses';
-import { sendMessage } from './twilio.functions';
+import sendMessage from './twilio.functions';
 
-import twilio from 'twilio';
 import { Message } from '../../models/message.model';
 
 const { MessagingResponse } = twilio.twiml;
@@ -45,7 +45,7 @@ router.post('/reply', async (req, res) => {
     phoneNumber: req.body.From,
     patientID: patient._id,
     message: inboundMessage,
-    receivedWith: "Glucose",
+    receivedWith: 'Glucose',
     sender: 'PATIENT',
     date,
   });

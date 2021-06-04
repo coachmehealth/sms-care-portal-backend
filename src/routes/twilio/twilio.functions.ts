@@ -1,19 +1,19 @@
+import { ObjectId } from 'mongodb';
+import twilio from 'twilio';
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_FROM_NUMBER,
 } from '../../utils/config';
-import { ObjectId } from 'mongodb';
-import twilio from 'twilio';
 import { Message } from '../../models/message.model';
 
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-export const sendMessage = async (req: any, res: any) => {
+const sendMessage = async (req: any, res: any) => {
   const content = req.body.message;
   const recept = req.body.to;
   const patientID = new ObjectId(req.body.patientID);
-  const scheduled = req.body.scheduled;
+  const { scheduled } = req.body;
   const date = scheduled === '' ? new Date() : new Date(scheduled);
 
   if (scheduled === '') {
@@ -42,7 +42,7 @@ export const sendMessage = async (req: any, res: any) => {
       })
       .catch((err) => console.log(err));
   } else {
-    //Schedule message
+    // Schedule message
     const outgoingMessage = new Message({
       sent: false,
       phoneNumber: TWILIO_FROM_NUMBER,
@@ -63,3 +63,5 @@ export const sendMessage = async (req: any, res: any) => {
       .catch((err) => err);
   }
 };
+
+export default sendMessage;
