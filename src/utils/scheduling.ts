@@ -37,12 +37,7 @@ const sendMessage = (msg: IMessage) => {
     { _id: msg.id },
     {
       sent: true,
-    },
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    },
+    }
   );
 
   // updates patient's sentmessages
