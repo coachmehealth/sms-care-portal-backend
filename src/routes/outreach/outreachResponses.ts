@@ -1,60 +1,108 @@
-import { capitalize, sample } from 'lodash';
+/* eslint-disable @typescript-eslint/indent */
+import { Patient, IPatient } from '../../models/patient.model';
+import { Message } from '../../models/message.model';
 
 type SupportedLanguage = 'english' | 'spanish';
 
 export const DefaultResponses = {
-  catchall: {
-    english:
-      'Hi, this is the automated blood glucose tracker. Please send a number in your message for us to track your sugar. If you wish to reach your coach text them at (650) 534-0331. Thanks!',
-    spanish:
-      'Hola, este es el monitoreo automatizado de glucosa. Favor envianos tu nivel de azucar en el mensaje, para agregarlo a tus datos. Si quieres hablar con tu consejero de salud, enviale un texto al (650) 534-0331. Gracias!',
+  zero: {
+    english: (coach: string, name: string, clinic: string) => {
+      return [
+        `Hi ${name}, your team at ${clinic} 🏥 referred you to join the Healthy At Home Program. This is ${coach} and I can tell you more.`,
+        'Diabetes is overwhelming. It can keep you from the long, worry-free life you deserve.',
+        'You’re not alone 🤝 Healthy at Home is a FREE 12-week diabetes coaching program on your phone 📱',
+        'Want to join for FREE? Respond YES to get set up with your diabetes coach or MORE to learn more.',
+      ];
+    },
+    spanish: (coach: string, name: string, clinic: string) => {
+      return [
+        `Hola, ${name} 😊, su equipo de salud de la Clínica ${clinic} le refirió para el programa Saludable en Casa. ¡Soy ${coach}, y me gustaría contarle más!`,
+        'Vivir con Diabetes es agobiante. Le hace difícil tener la vida saludable, y sin-cuidados que merece.',
+        'No está solo 🤝 . Saludable en Casa es un programa GRATIS de 12 semanas de coaching o consejería de diabetes, en su teléfono.',
+        '¿Le gustaría unirse? Es GRATIS. Conteste SI para unirle a su coach o consejero de diabetes, o ponga MAS para aprender más 😊.',
+      ];
+    },
   },
-  no_from_patient: {
-    english:
-      'Hi, were you able to measure your sugar today? If you need any help with measuring your sugar, please tell your coach.',
-    spanish:
-      'Hola, pudiste revisar tu azucar hoy? Si necesitas ayuda revisando tu azucar, por favor dile a tu consejero de salud.',
+  one: {
+    english: () => {
+      return [
+        'Great! We’ve helped people like you manage their diabetes at home. See for yourself:',
+        '[IMAGEN]',
+        '[IMAGEN]',
+        `Here’s how it works
+        1. We call you to tell you more
+        2. Schedule a visit
+        3. Start feeling great!
+        `,
+        'Ready to start? Respond YES to get set up with your diabetes coach or MORE to learn more',
+      ];
+    },
+    spanish: () => {
+      return [
+        'Bien! Hemos ayudado a mucha gente como usted a mejorar y manejar su diabetes en casa, por telefono. Vealo por usted mismo:',
+        '[IMAGEN]',
+        '[IMAGEN]',
+        `Así es como funciona:
+        1. Le llamamos para contarle más
+        2. Programe una llamada con su coach
+        3. Empiece a sentirse mejor
+        `,
+        '¿Listo para comenzar? Conteste SI para unirle a su coach de diabetes o MÁS para más información.',
+      ];
+    },
   },
-  too_many_readings: {
-    english:
-      'Hi, it looks like you sent more than one number. Please send one number in each message.',
-    spanish:
-      'Hola! Veo que enviaste varios numeros. Favor envianos un numero por mensaje.',
+  two: {
+    english: () => {
+      return [
+        'Wonderful! This valuable program is FREE to you and it’s starting now, so don’t miss out!',
+        'We want you to know you can stop ✋ if you need and it works on any phone 📱.',
+        `Give it a try ✨
+        Respond YES to get set up with your diabetes coach or to learn more.
+        `,
+      ];
+    },
+    spanish: () => {
+      return [
+        '¡Fabuloso! Este programa es GRATUITO y muy valioso. ¡Comience pronto, no pierda la oportunidad!',
+        'Quiero que sepa que funciona desde cualquier teléfono, y puede parar ✋ si lo necesita.',
+        `Pruébelo ✨
+        Responda SI para unirle a su coach de Diabetes, o MÁS para más información.
+        `,
+      ];
+    },
   },
-  '<70': {
-    english:
-      'Your measurement is less than 70. A level less than 70 is low and can harm you. \nTo raise your sugar levels, we recommend you eat or drink sugar now. Try fruit juice with sugar, sugary soda, eat four pieces of candy with sugar. \nAfter 15 minutes, check your sugar levels and text us your measurement. \nIf you continue to measure less than 70, seek urgent medical help.',
-    spanish:
-      'Tu medida de azucar es menor a 70. Un nivel menor a 70 es bajo, y puede perjudicar tu salud.\nRecomendamos tomar o comer algo azucarado ahora mismo, para ayudar a elevar tu nivel de azucar.\nDentro de 15 minutos, favor revisa tu nivel de azucar de nuevo, y envianos tu numero.\nSi tu medida de azucar aun esta abajo de 70, busca ayuda medica urgentemente.',
+  yes: {
+    english: () => {
+      return [
+        'Great 😀! Your coach will reach out to you within the next 5 days📱. Talk to you soon!',
+      ];
+    },
+    spanish: () => {
+      return [
+        '¡Bien 😀! Su coach o consejero le contactará dentro de los siguientes 5 días📱. ¡Hablamos pronto!',
+      ];
+    },
   },
-  '<80': {
-    english:
-      'Thank you! How are you feeling? If you feel - sleepy, sweaty, pale, dizzy, irritable, or hungry - your sugar may be too low.\nPlease consume sugar (like juice) to raise your sugars to 80 or above.',
-    spanish:
-      'Gracias! Como te sientes? Si te sientes: sudoroso, con sueno, palido, mareado, enojado o hambriento - tu azucar puede estar muy baja.',
-  },
-  green: {
-    english: 'Congratulations! You’re in the green today - keep it up!',
-    spanish: 'Felicidades! 🎉 Estas en el verde hoy - sigue asi!',
-  },
-  yellow: {
-    english:
-      'Thank you! You’re in the yellow today - what is one thing you can do to help you lower your glucose levels for tomorrow?',
-    spanish:
-      'Gracias! Estas en el amarillo 🟡  hoy - cual seria una cosa que podrias hacer para bajar tus niveles de glucosa de mañana? 🤔',
-  },
-  red: {
-    english:
-      'Thank you! You’re in the red today - your sugars are high. What can you do to lower your number for tomorrow??',
-    spanish:
-      'Gracias por compartir. Estas en el rojo 🔴 hoy, pero lo importante es continuar trabajando duro en tus metas de salud 💪🏻. Tu puedes!',
-  },
-  '>300': {
-    english:
-      'Your measurement is over 300. Fasting blood glucose levels of 300 or more can be dangerous.\nIf you have two readings in a row of 300 or more or are worried about how you feel, call your doctor.',
-    spanish:
-      'Tu medida esta por encima de 300. Niveles de glucosa de 300, o arriba, pueden ser peligrosos. Si tienes dos numeros seguidos, arriba de 300, o estas preocupado/a de como te sientes, llama a tu doctor.',
-  },
+};
+
+const sendMessageMinutesFromNow = async (
+  minutes: number,
+  patient: IPatient,
+  message: string,
+) => {
+  const todayPlusMinutes = new Date();
+  todayPlusMinutes.setMinutes(todayPlusMinutes.getMinutes() + minutes);
+
+  const newMessage = new Message({
+    sent: false,
+    phoneNumber: patient.phoneNumber,
+    patientID: patient._id,
+    message,
+    sender: 'Outreach',
+    date: todayPlusMinutes,
+  });
+
+  await newMessage.save();
 };
 
 const responseLanguage = (language?: string): SupportedLanguage => {
@@ -70,33 +118,39 @@ const responseLanguage = (language?: string): SupportedLanguage => {
   return 'english';
 };
 
-export const responseForParsedMessage = async (
-  parsedMessage: ParsedMessage,
-  language?: string,
-): Promise<string> => {
-  const lang = responseLanguage(language);
+export const outreachMessage = async (patient: IPatient): Promise<string[]> => {
+  const language = responseLanguage(patient.language);
+  if (patient.outreach.lastMessageSent === '0') {
+    const response =
+      language === 'english'
+        ? DefaultResponses.zero.english(
+            patient.coachName,
+            patient.firstName,
+            patient.clinic,
+          )
+        : DefaultResponses.zero.spanish(
+            patient.coachName,
+            patient.firstName,
+            patient.clinic,
+          );
 
-  if (parsedMessage.error) {
-    return DefaultResponses[parsedMessage.error][lang];
+    await sendMessageMinutesFromNow(1, patient, response[0]);
+    await sendMessageMinutesFromNow(2, patient, response[1]);
+    await sendMessageMinutesFromNow(3, patient, response[2]);
+    await sendMessageMinutesFromNow(4, patient, response[3]);
+
+    await Patient.findOneAndUpdate(
+      { _id: patient._id },
+      {
+        outreach: {
+          outreach: true,
+          more: false,
+          yes: false,
+          lastMessageSent: '1',
+        },
+      },
+    );
   }
 
-  const classification = parsedMessage.glucoseReading?.classification;
-  if (!classification) {
-    return DefaultResponses.catchall[lang];
-  }
-
-  const templates = await MessageTemplate.find({
-    language: capitalize(lang),
-    type: capitalize(classification),
-  });
-
-  console.log('Got message templates from DB = ', templates);
-
-  const randomTemplate = sample(templates);
-
-  if (!randomTemplate) {
-    return DefaultResponses[classification][lang];
-  }
-
-  return randomTemplate.text;
+  return [''];
 };

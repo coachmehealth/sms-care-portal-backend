@@ -10,8 +10,6 @@ import runCronSchedules from './cronSchedules';
 import initializeScheduler from '../../utils/scheduling';
 import errorHandler from '../error';
 
-
-
 const router = express.Router();
 initializeScheduler();
 
