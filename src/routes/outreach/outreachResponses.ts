@@ -74,12 +74,12 @@ export const DefaultResponses = {
   yes: {
     english: () => {
       return [
-        'Great 😀! Your coach will reach out to you within the next 5 days📱. Talk to you soon!',
+        'Welcome to Healthy at Home! By joining, you’ve taken step 1️⃣ for your health. 💪',
       ];
     },
     spanish: () => {
       return [
-        '¡Bien 😀! Su coach o consejero le contactará dentro de los siguientes 5 días📱. ¡Hablamos pronto!',
+        'Bienvenido a Salud en casa! Al unirte has tomado el paso 1️⃣ para tu salud. 💪',
       ];
     },
   },
@@ -118,7 +118,10 @@ const responseLanguage = (language?: string): SupportedLanguage => {
   return 'english';
 };
 
-export const outreachMessage = async (patient: IPatient): Promise<string[]> => {
+export const outreachMessage = async (
+  patient: IPatient,
+  yesMessage?: boolean,
+): Promise<string[]> => {
   const language = responseLanguage(patient.language);
   if (patient.outreach.lastMessageSent === '0') {
     const response =
@@ -147,6 +150,97 @@ export const outreachMessage = async (patient: IPatient): Promise<string[]> => {
           more: false,
           yes: false,
           lastMessageSent: '1',
+          lastDate: new Date(),
+        },
+      },
+    );
+  }
+
+  if (
+    patient.outreach.lastMessageSent === '1' &&
+    patient.outreach.yes === false
+  ) {
+    const response =
+      language === 'english'
+        ? DefaultResponses.one.english()
+        : DefaultResponses.one.spanish();
+
+    await sendMessageMinutesFromNow(1, patient, response[0]);
+    await sendMessageMinutesFromNow(2, patient, response[1]);
+    await sendMessageMinutesFromNow(3, patient, response[2]);
+    await sendMessageMinutesFromNow(4, patient, response[3]);
+    await sendMessageMinutesFromNow(5, patient, response[4]);
+
+    await Patient.findOneAndUpdate(
+      { _id: patient._id },
+      {
+        outreach: {
+          outreach: true,
+          more: true,
+          yes: false,
+          lastMessageSent: '2',
+          lastDate: new Date(),
+        },
+      },
+    );
+  }
+
+  if (
+    patient.outreach.lastMessageSent === '2' &&
+    patient.outreach.yes === false
+  ) {
+    const response =
+      language === 'english'
+        ? DefaultResponses.two.english()
+        : DefaultResponses.two.spanish();
+
+    await sendMessageMinutesFromNow(1, patient, response[0]);
+    await sendMessageMinutesFromNow(2, patient, response[1]);
+    await sendMessageMinutesFromNow(3, patient, response[2]);
+
+    await Patient.findOneAndUpdate(
+      { _id: patient._id },
+      {
+        outreach: {
+          outreach: true,
+          more: true,
+          yes: false,
+          lastMessageSent: '3',
+          lastDate: new Date(),
+        },
+      },
+    );
+  }
+
+  if (
+    patient.outreach.lastMessageSent === '3' &&
+    patient.outreach.yes === false
+  ) {
+    const response =
+      language === 'english'
+        ? DefaultResponses.two.english()
+        : DefaultResponses.two.spanish();
+
+    await sendMessageMinutesFromNow(3, patient, response[2]);
+  }
+
+  if (yesMessage) {
+    const response =
+      language === 'english'
+        ? DefaultResponses.yes.english()
+        : DefaultResponses.yes.spanish();
+
+    await sendMessageMinutesFromNow(1, patient, response[0]);
+
+    await Patient.findOneAndUpdate(
+      { _id: patient._id },
+      {
+        outreach: {
+          outreach: false, // Because outreach has been completed
+          more: patient.outreach.more,
+          yes: true,
+          lastMessageSent: 'yes',
+          lastDate: new Date(),
         },
       },
     );

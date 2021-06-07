@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/indent */
 import { ObjectId } from 'mongodb';
 import { Message } from '../../models/message.model';
 import { MessageTemplate } from '../../models/messageTemplate.model';
 import { Patient } from '../../models/patient.model';
 import { Outcome, IOutcome } from '../../models/outcome.model';
+import { outreachMessage } from '../outreach/outreachResponses';
 
 interface IweekRecords {
   [char: string]: number;
@@ -283,19 +285,19 @@ export const weeklyReport = () => {
               const message =
                 patient.language.toLowerCase() === 'english'
                   ? getMessageTemplate(
-                    greenCount,
-                    recordedCount,
-                    weekAverage,
-                    weekRecords,
-                    'english',
-                  )
+                      greenCount,
+                      recordedCount,
+                      weekAverage,
+                      weekRecords,
+                      'english',
+                    )
                   : getMessageTemplate(
-                    greenCount,
-                    recordedCount,
-                    weekAverage,
-                    weekRecords,
-                    'spanish',
-                  );
+                      greenCount,
+                      recordedCount,
+                      weekAverage,
+                      weekRecords,
+                      'spanish',
+                    );
               const newMessage = new Message({
                 patientID: new ObjectId(patient._id),
                 phoneNumber: patient.phoneNumber,
@@ -311,4 +313,16 @@ export const weeklyReport = () => {
       });
     })
     .catch((err) => console.log(err));
+};
+
+export const outreachNoResponseSendYES = async () => {
+  const patients = await Patient.find({ enabled: true });
+  const yesterday = new Date();
+  yesterday.setHours(yesterday.getHours() - 24);
+
+  patients.forEach(async (patient) => {
+    if (patient.outreach.outreach && patient.outreach.lastDate < yesterday) {
+      outreachMessage(patient, true);
+    }
+  });
 };

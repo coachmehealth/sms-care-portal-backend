@@ -6,10 +6,12 @@ import {
   TWILIO_FROM_NUMBER,
 } from '../../utils/config';
 import { Message } from '../../models/message.model';
+import { IPatient } from '../../models/patient.model';
+import { outreachMessage } from '../outreach/outreachResponses';
 
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-const sendMessage = async (req: any, res: any) => {
+export const sendMessage = async (req: any, res: any) => {
   const content = req.body.message;
   const recept = req.body.to;
   const patientID = new ObjectId(req.body.patientID);
@@ -64,4 +66,20 @@ const sendMessage = async (req: any, res: any) => {
   }
 };
 
-export default sendMessage;
+export const parseOutreachMessage = async (
+  message: string,
+  patient: IPatient,
+) => {
+  // If it's the first time we recieve an answer with "MORE".
+  if (message.includes('MORE') && patient.outreach.more === false) {
+    outreachMessage(patient);
+  }
+
+  if (message.includes('MORE') && patient.outreach.more === true) {
+    outreachMessage(patient);
+  }
+
+  if (message.includes('YES')) {
+    outreachMessage(patient, true);
+  }
+};

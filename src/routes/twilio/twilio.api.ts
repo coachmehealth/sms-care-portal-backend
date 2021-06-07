@@ -7,7 +7,7 @@ import { PatientForPhoneNumber } from '../../models/patient.model';
 import auth from '../../middleware/auth';
 import { parseInboundPatientMessage } from '../../domain/message_parsing';
 import { responseForParsedMessage } from '../../domain/glucose_reading_responses';
-import sendMessage from './twilio.functions';
+import { sendMessage, parseOutreachMessage } from './twilio.functions';
 
 import { Message } from '../../models/message.model';
 
@@ -117,6 +117,9 @@ router.post('/receive', async (req, res) => {
   });
 
   await incomingMessage.save();
+  if (patient.outreach) {
+    await parseOutreachMessage(inboundMessage, patient);
+  }
 
   res.writeHead(200, { 'Content-Type': 'text/xml' });
   res.end();
