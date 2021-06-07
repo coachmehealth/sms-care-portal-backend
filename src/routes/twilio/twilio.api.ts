@@ -87,6 +87,8 @@ router.post('/reply', async (req, res) => {
   res.end(twiml.message(responseMessage).toString());
 });
 
+// this route receives and parses the message from one user, then responds accordingly with the appropriate output.
+// This route is used for messages other than glucose tracker.
 router.post('/receive', async (req, res) => {
   const twiml = new MessagingResponse();
 
@@ -110,6 +112,7 @@ router.post('/receive', async (req, res) => {
     patientID: patient._id,
     message: inboundMessage,
     sender: 'PATIENT',
+    receivedWith: 'Outreach',
     date,
   });
 

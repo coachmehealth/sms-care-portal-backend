@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/indent */
 import express from 'express';
-import { Outcome } from '../models/outcome.model';
-import { Patient, PatientForPhoneNumber } from '../models/patient.model';
-import auth from '../middleware/auth';
-import errorHandler from './error';
-import { Message } from '../models/message.model';
+import { Outcome } from '../../models/outcome.model';
+import { Patient, PatientForPhoneNumber } from '../../models/patient.model';
+import auth from '../../middleware/auth';
+import errorHandler from '../error';
+import { Message } from '../../models/message.model';
 
 const { ObjectId } = require('mongoose').Types;
 
@@ -89,6 +89,8 @@ router.post('/add', auth, async (req, res) => {
     coachName: req.body.coachName,
     enabled: req.body.isEnabled,
     prefTime: hours * 60 + mins,
+    clinic: req.body.clinic,
+    outreach: req.body.outreach,
   });
   return newPatient.save().then(() => {
     res.status(200).json({
@@ -146,8 +148,7 @@ router.get('/getPatientOutcomes/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Outcome.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList)
-        return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
 
       return res
         .status(200)
@@ -170,8 +171,7 @@ router.get('/getPatientMessages/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Message.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList)
-        return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
       return res.status(200).json(outcomeList);
     })
     .catch((err) => errorHandler(res, err.message));
