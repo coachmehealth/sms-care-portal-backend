@@ -121,6 +121,7 @@ const responseLanguage = (language?: string): SupportedLanguage => {
 export const outreachMessage = async (
   patient: IPatient,
   yesMessage?: boolean,
+  moreMessage?: boolean,
 ): Promise<string[]> => {
   const language = responseLanguage(patient.language);
   if (patient.outreach.lastMessageSent === '0') {
@@ -158,7 +159,9 @@ export const outreachMessage = async (
 
   if (
     patient.outreach.lastMessageSent === '1' &&
-    patient.outreach.yes === false
+    patient.outreach.yes === false &&
+    moreMessage === true &&
+    yesMessage === false
   ) {
     const response =
       language === 'english'
@@ -187,7 +190,10 @@ export const outreachMessage = async (
 
   if (
     patient.outreach.lastMessageSent === '2' &&
-    patient.outreach.yes === false
+    patient.outreach.yes === false &&
+    moreMessage === true &&
+    patient.outreach.more === true &&
+    yesMessage === false
   ) {
     const response =
       language === 'english'
@@ -214,7 +220,8 @@ export const outreachMessage = async (
 
   if (
     patient.outreach.lastMessageSent === '3' &&
-    patient.outreach.yes === false
+    patient.outreach.yes === false &&
+    yesMessage === false
   ) {
     const response =
       language === 'english'

@@ -316,6 +316,7 @@ export const weeklyReport = () => {
 };
 
 export const outreachNoResponseSendYES = async () => {
+  console.log('Sending outreach messages to patients that did not respond');
   const patients = await Patient.find({ enabled: true });
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);

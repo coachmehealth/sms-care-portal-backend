@@ -1,6 +1,6 @@
 import { Message } from '../../models/message.model';
 import { connectDatabase, clearDatabse, closeDatabase } from '../../../test/db';
-import sendMessage from './twilio.functions';
+import { sendMessage } from './twilio.functions';
 
 beforeAll(() => connectDatabase());
 afterEach(() => clearDatabse());

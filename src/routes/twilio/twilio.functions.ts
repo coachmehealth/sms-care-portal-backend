@@ -72,11 +72,11 @@ export const parseOutreachMessage = async (
 ) => {
   // If it's the first time we recieve an answer with "MORE".
   if (message.includes('MORE') && patient.outreach.more === false) {
-    outreachMessage(patient);
+    outreachMessage(patient, false, true);
   }
 
   if (message.includes('MORE') && patient.outreach.more === true) {
-    outreachMessage(patient);
+    outreachMessage(patient, false, true);
   }
 
   if (message.includes('YES')) {

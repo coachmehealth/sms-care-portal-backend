@@ -1,4 +1,8 @@
-import { dailyMidnightMessages, weeklyReport } from './utils';
+import {
+  dailyMidnightMessages,
+  weeklyReport,
+  outreachNoResponseSendYES,
+} from './utils';
 
 const cron = require('node-cron');
 
@@ -11,6 +15,11 @@ const runCronSchedules = () => {
 
   // Send report every monday at 11 AM. PST.
   cron.schedule('0 11 * * 1', () => weeklyReport(), {
+    scheduled: true,
+    timezone: 'America/Los_Angeles',
+  });
+
+  cron.schedule('0 11 * * *', () => outreachNoResponseSendYES(), {
     scheduled: true,
     timezone: 'America/Los_Angeles',
   });

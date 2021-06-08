@@ -5,7 +5,11 @@ import mongoose from 'mongoose';
 export const connectDatabase = async () => {
   await mongoose.connect(
     'mongodb://127.0.0.1:27017/jest',
-    { useNewUrlParser: true, useUnifiedTopology: true },
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    },
     (err) => {
       if (err) {
         process.exit(1);
