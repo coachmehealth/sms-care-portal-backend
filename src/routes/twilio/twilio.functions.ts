@@ -19,11 +19,20 @@ export const sendMessage = async (req: any, res: any) => {
   const date = scheduled === '' ? new Date() : new Date(scheduled);
 
   if (scheduled === '') {
-    twilioClient.messages.create({
-      body: content,
-      from: TWILIO_FROM_NUMBER,
-      to: recept,
-    });
+    if (content.includes('https://')) {
+      twilioClient.messages.create({
+        body: '',
+        from: TWILIO_FROM_NUMBER,
+        mediaUrl: [content],
+        to: recept,
+      });
+    } else {
+      twilioClient.messages.create({
+        body: content,
+        from: TWILIO_FROM_NUMBER,
+        to: recept,
+      });
+    }
 
     const outgoingMessage = new Message({
       sent: true,
