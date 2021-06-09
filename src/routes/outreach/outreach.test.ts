@@ -29,6 +29,7 @@ describe('Outreach tests', () => {
         yes: false,
         lastMessageSent: '0',
         lastDate: new Date(),
+        pending: false,
       },
     });
 
@@ -66,6 +67,7 @@ describe('Outreach tests', () => {
         yes: false,
         lastMessageSent: '1',
         lastDate: new Date(),
+        pending: false,
       },
     });
 
@@ -101,6 +103,7 @@ describe('Outreach tests', () => {
         yes: false,
         lastMessageSent: '1',
         lastDate: new Date(),
+        pending: false,
       },
     });
 
@@ -138,6 +141,7 @@ describe('Outreach tests', () => {
         yes: false,
         lastMessageSent: '1',
         lastDate: new Date(),
+        pending: false,
       },
     });
 
