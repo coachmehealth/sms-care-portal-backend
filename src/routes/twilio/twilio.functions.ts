@@ -11,7 +11,7 @@ import { outreachMessage } from '../outreach/outreachResponses';
 
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-export const sendMessage = async (req: any, res: any) => {
+export const sendChatMessage = async (req: any, res: any) => {
   const content = req.body.message;
   const recept = req.body.to;
   const patientID = new ObjectId(req.body.patientID);
@@ -19,20 +19,11 @@ export const sendMessage = async (req: any, res: any) => {
   const date = scheduled === '' ? new Date() : new Date(scheduled);
 
   if (scheduled === '') {
-    if (content.includes('https://')) {
-      twilioClient.messages.create({
-        body: '',
-        from: TWILIO_FROM_NUMBER,
-        mediaUrl: [content],
-        to: recept,
-      });
-    } else {
-      twilioClient.messages.create({
-        body: content,
-        from: TWILIO_FROM_NUMBER,
-        to: recept,
-      });
-    }
+    twilioClient.messages.create({
+      body: content,
+      from: TWILIO_FROM_NUMBER,
+      to: recept,
+    });
 
     const outgoingMessage = new Message({
       sent: true,

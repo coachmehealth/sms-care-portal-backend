@@ -29,6 +29,7 @@ describe('Outreach tests', () => {
         yes: false,
         lastMessageSent: '0',
         lastDate: new Date(),
+        messageCount: 0,
         pending: false,
       },
     });
@@ -38,7 +39,7 @@ describe('Outreach tests', () => {
     const patient = await PatientForPhoneNumber('1234567891');
 
     if (patient?.outreach.outreach) {
-      await outreachMessage(patient);
+      await outreachMessage(patient, false, false);
     }
 
     const message = await Message.find({ phoneNumber: '1234567891' });
@@ -67,6 +68,7 @@ describe('Outreach tests', () => {
         yes: false,
         lastMessageSent: '1',
         lastDate: new Date(),
+        messageCount: 1,
         pending: false,
       },
     });
@@ -103,6 +105,7 @@ describe('Outreach tests', () => {
         yes: false,
         lastMessageSent: '1',
         lastDate: new Date(),
+        messageCount: 1,
         pending: false,
       },
     });
@@ -140,6 +143,7 @@ describe('Outreach tests', () => {
         more: false,
         yes: false,
         lastMessageSent: '1',
+        messageCount: 1,
         lastDate: new Date(),
         pending: false,
       },

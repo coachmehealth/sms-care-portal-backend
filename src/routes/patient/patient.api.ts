@@ -201,6 +201,7 @@ router.put('/outreach/pending', auth, async (req, res) => {
         more: currentPatient.outreach.more,
         yes: currentPatient.outreach.yes,
         lastMessageSent: currentPatient.outreach.lastMessageSent,
+        messageCount: currentPatient.outreach.messageCount,
         lastDate: currentPatient.outreach.lastDate,
         pending,
       },

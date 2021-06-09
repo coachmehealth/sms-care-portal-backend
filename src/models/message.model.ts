@@ -12,6 +12,7 @@ interface IMessage extends mongoose.Document {
   image: {
     data: Buffer;
     contentType: String;
+    hostedLink: String;
   };
   date: Date;
   sent: Boolean;
@@ -26,6 +27,7 @@ const MessageSchema = new Schema({
   image: {
     data: { type: mongoose.Schema.Types.Buffer, required: false },
     contentType: { type: String, required: false },
+    hostedLink: { type: String, required: false },
   },
   date: { type: mongoose.Schema.Types.Date, required: true },
   sent: { type: mongoose.Schema.Types.Boolean, default: false },

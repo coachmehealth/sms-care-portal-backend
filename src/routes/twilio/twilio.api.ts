@@ -7,7 +7,7 @@ import { PatientForPhoneNumber } from '../../models/patient.model';
 import auth from '../../middleware/auth';
 import { parseInboundPatientMessage } from '../../domain/message_parsing';
 import { responseForParsedMessage } from '../../domain/glucose_reading_responses';
-import { sendMessage, parseOutreachMessage } from './twilio.functions';
+import { sendChatMessage, parseOutreachMessage } from './twilio.functions';
 
 import { Message } from '../../models/message.model';
 
@@ -19,7 +19,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const UNRECOGNIZED_PATIENT_RESPONSE =
   'We do not recognize this number. Please contact CoachMe support.';
 
-router.post('/sendMessage', auth, [sendMessage]);
+router.post('/sendMessage', auth, [sendChatMessage]);
 
 // this route receives and parses the message from one user, then responds accordingly with the appropriate output.
 // This route is used for the glucose tracker.

@@ -28,20 +28,12 @@ const getPatientIdFromNumber = (number: any) => {
 
 // sends message, marks it as sent
 const sendMessage = (msg: IMessage) => {
-  if (msg.message.includes('https://')) {
-    twilio.messages.create({
-      body: '',
-      from: TWILIO_FROM_NUMBER,
-      mediaUrl: [msg.message],
-      to: msg.phoneNumber,
-    });
-  } else {
-    twilio.messages.create({
-      body: msg.message,
-      from: TWILIO_FROM_NUMBER,
-      to: msg.phoneNumber,
-    });
-  }
+  twilio.messages.create({
+    body: msg.message,
+    from: TWILIO_FROM_NUMBER,
+    mediaUrl: [msg?.image?.hostedLink],
+    to: msg.phoneNumber,
+  });
 
   Message.findOneAndUpdate(
     { _id: msg.id },

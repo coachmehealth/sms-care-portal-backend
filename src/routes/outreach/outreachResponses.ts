@@ -11,6 +11,7 @@ export const DefaultResponses = {
         `Hi ${name}, your team at ${clinic} 🏥 referred you to join the Healthy At Home Program. This is ${coach} and I can tell you more.`,
         'Diabetes is overwhelming. It can keep you from the long, worry-free life you deserve.',
         'You’re not alone 🤝 Healthy at Home is a FREE 12-week diabetes coaching program on your phone 📱',
+        'https://document-export.canva.com/79HiM/DAEg7J79HiM/2/thumbnail/0001-2639452354.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUHWDTJW6UD%2F20210609%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210609T145715Z&X-Amz-Expires=26385&X-Amz-Signature=867c82512440d24fd228e3d26e1772d95edd3cf01477724bb4b9d48a3869b02b&X-Amz-SignedHeaders=host&response-expires=Wed%2C%2009%20Jun%202021%2022%3A17%3A00%20GMT',
         'Want to join for FREE? Respond YES to get set up with your diabetes coach or MORE to learn more.',
       ];
     },
@@ -19,6 +20,7 @@ export const DefaultResponses = {
         `Hola, ${name} 😊, su equipo de salud de la Clínica ${clinic} le refirió para el programa Saludable en Casa. ¡Soy ${coach}, y me gustaría contarle más!`,
         'Vivir con Diabetes es agobiante. Le hace difícil tener la vida saludable, y sin-cuidados que merece.',
         'No está solo 🤝 . Saludable en Casa es un programa GRATIS de 12 semanas de coaching o consejería de diabetes, en su teléfono.',
+        'https://document-export.canva.com/79HiM/DAEg7J79HiM/2/thumbnail/0001-2639452354.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUHWDTJW6UD%2F20210609%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210609T145715Z&X-Amz-Expires=26385&X-Amz-Signature=867c82512440d24fd228e3d26e1772d95edd3cf01477724bb4b9d48a3869b02b&X-Amz-SignedHeaders=host&response-expires=Wed%2C%2009%20Jun%202021%2022%3A17%3A00%20GMT',
         '¿Le gustaría unirse? Es GRATIS. Conteste SI para unirle a su coach o consejero de diabetes, o ponga MAS para aprender más 😊.',
       ];
     },
@@ -89,6 +91,7 @@ const sendMessageMinutesFromNow = async (
   minutes: number,
   patient: IPatient,
   message: string,
+  imageURL?: string,
 ) => {
   const todayPlusMinutes = new Date();
   todayPlusMinutes.setMinutes(todayPlusMinutes.getMinutes() + minutes);
@@ -100,6 +103,9 @@ const sendMessageMinutesFromNow = async (
     message,
     sender: 'Outreach',
     date: todayPlusMinutes,
+    image: {
+      hostedLink: imageURL,
+    },
   });
 
   await newMessage.save();
@@ -124,7 +130,11 @@ export const outreachMessage = async (
   moreMessage?: boolean,
 ): Promise<string[]> => {
   const language = responseLanguage(patient.language);
-  if (patient.outreach.lastMessageSent === '0') {
+  if (
+    patient.outreach.yes === false &&
+    moreMessage === false &&
+    yesMessage === false
+  ) {
     const response =
       language === 'english'
         ? DefaultResponses.zero.english(
@@ -140,8 +150,8 @@ export const outreachMessage = async (
 
     await sendMessageMinutesFromNow(1, patient, response[0]);
     await sendMessageMinutesFromNow(2, patient, response[1]);
-    await sendMessageMinutesFromNow(3, patient, response[2]);
-    await sendMessageMinutesFromNow(4, patient, response[3]);
+    await sendMessageMinutesFromNow(3, patient, response[2], response[3]);
+    await sendMessageMinutesFromNow(4, patient, response[4]);
 
     await Patient.findOneAndUpdate(
       { _id: patient._id },
@@ -150,7 +160,8 @@ export const outreachMessage = async (
           outreach: true,
           more: false,
           yes: false,
-          lastMessageSent: '1',
+          lastMessageSent: '0',
+          messageCount: patient.outreach.messageCount + 1,
           lastDate: new Date(),
           pending: true,
         },
@@ -159,7 +170,6 @@ export const outreachMessage = async (
   }
 
   if (
-    patient.outreach.lastMessageSent === '1' &&
     patient.outreach.yes === false &&
     moreMessage === true &&
     yesMessage === false
@@ -182,8 +192,9 @@ export const outreachMessage = async (
           outreach: true,
           more: true,
           yes: false,
-          lastMessageSent: '2',
+          lastMessageSent: '1',
           lastDate: new Date(),
+          messageCount: patient.outreach.messageCount + 1,
           pending: true,
         },
       },
@@ -191,7 +202,6 @@ export const outreachMessage = async (
   }
 
   if (
-    patient.outreach.lastMessageSent === '2' &&
     patient.outreach.yes === false &&
     moreMessage === true &&
     patient.outreach.more === true &&
@@ -213,25 +223,13 @@ export const outreachMessage = async (
           outreach: true,
           more: true,
           yes: false,
-          lastMessageSent: '3',
+          lastMessageSent: '2',
           lastDate: new Date(),
+          messageCount: patient.outreach.messageCount + 1,
           pending: true,
         },
       },
     );
-  }
-
-  if (
-    patient.outreach.lastMessageSent === '3' &&
-    patient.outreach.yes === false &&
-    yesMessage === false
-  ) {
-    const response =
-      language === 'english'
-        ? DefaultResponses.two.english()
-        : DefaultResponses.two.spanish();
-
-    await sendMessageMinutesFromNow(3, patient, response[2]);
   }
 
   if (yesMessage) {
@@ -251,6 +249,7 @@ export const outreachMessage = async (
           yes: true,
           lastMessageSent: 'yes',
           lastDate: new Date(),
+          messageCount: patient.outreach.messageCount + 1,
           pending: true,
         },
       },

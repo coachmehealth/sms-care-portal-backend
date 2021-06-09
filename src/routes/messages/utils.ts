@@ -315,14 +315,24 @@ export const weeklyReport = () => {
     .catch((err) => console.log(err));
 };
 
-export const outreachNoResponseSendYES = async () => {
+export const outreachNoResponse = async () => {
   console.log('Sending outreach messages to patients that did not respond');
   const patients = await Patient.find({ enabled: true });
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);
 
   patients.forEach(async (patient) => {
-    if (patient.outreach.outreach && patient.outreach.lastDate < yesterday) {
+    if (
+      patient.outreach.outreach &&
+      !patient.outreach.yes &&
+      patient.outreach.messageCount <= 4
+    ) {
+      outreachMessage(patient, false, false);
+    } else if (
+      patient.outreach.outreach &&
+      patient.outreach.lastDate < yesterday &&
+      !patient.outreach.yes
+    ) {
       outreachMessage(patient, true);
     }
   });

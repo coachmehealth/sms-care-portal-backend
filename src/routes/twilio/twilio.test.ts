@@ -1,6 +1,6 @@
 import { Message } from '../../models/message.model';
 import { connectDatabase, clearDatabse, closeDatabase } from '../../../test/db';
-import { sendMessage } from './twilio.functions';
+import { sendChatMessage } from './twilio.functions';
 
 beforeAll(() => connectDatabase());
 afterEach(() => clearDatabse());
@@ -29,7 +29,7 @@ describe('User Model Test', () => {
         sent: false,
       },
     };
-    await sendMessage(req, res);
+    await sendChatMessage(req, res);
     const message = await Message.findOne({ message: req.body.message });
     expect(message).toBeTruthy();
 
@@ -54,7 +54,7 @@ describe('User Model Test', () => {
         sent: false,
       },
     };
-    await sendMessage(req, res);
+    await sendChatMessage(req, res);
     const message = await Message.findOne({ message: req.body.message });
     expect(message).toBeTruthy();
 
