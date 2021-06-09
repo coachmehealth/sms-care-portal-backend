@@ -190,4 +190,27 @@ router.post('/status', auth, (req, res) => {
     .catch((err) => errorHandler(res, err.message));
 });
 
+router.put('/outreach/pending', auth, async (req, res) => {
+  const { id } = req.body;
+  const { pending } = req.body;
+  const currentPatient = await Patient.findById(new ObjectId(id));
+  if (currentPatient) {
+    return Patient.findByIdAndUpdate(new ObjectId(id), {
+      outreach: {
+        outreach: currentPatient.outreach.outreach,
+        more: currentPatient.outreach.more,
+        yes: currentPatient.outreach.yes,
+        lastMessageSent: currentPatient.outreach.lastMessageSent,
+        lastDate: currentPatient.outreach.lastDate,
+        pending,
+      },
+    })
+      .then(() => {
+        return res.status(200).json('Patiet Outreach Status Changed!');
+      })
+      .catch((err) => errorHandler(res, err.message));
+  }
+  return res.status(404).json('Patiet Not Found');
+});
+
 export default router;

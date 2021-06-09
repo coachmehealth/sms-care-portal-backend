@@ -27,6 +27,7 @@ interface IPatient extends mongoose.Document {
     yes: boolean;
     lastMessageSent: string;
     lastDate: Date;
+    pending: boolean;
   };
 }
 
@@ -54,6 +55,7 @@ const PatientSchema = new Schema({
     yes: { type: Boolean, required: true },
     lastMessageSent: { type: String, required: true },
     lastDate: { type: Date, required: true },
+    pending: { type: Boolean, required: true },
   },
 });
 

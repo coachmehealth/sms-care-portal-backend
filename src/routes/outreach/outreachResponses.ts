@@ -152,6 +152,7 @@ export const outreachMessage = async (
           yes: false,
           lastMessageSent: '1',
           lastDate: new Date(),
+          pending: true,
         },
       },
     );
@@ -183,6 +184,7 @@ export const outreachMessage = async (
           yes: false,
           lastMessageSent: '2',
           lastDate: new Date(),
+          pending: true,
         },
       },
     );
@@ -213,6 +215,7 @@ export const outreachMessage = async (
           yes: false,
           lastMessageSent: '3',
           lastDate: new Date(),
+          pending: true,
         },
       },
     );
@@ -248,6 +251,7 @@ export const outreachMessage = async (
           yes: true,
           lastMessageSent: 'yes',
           lastDate: new Date(),
+          pending: true,
         },
       },
     );
