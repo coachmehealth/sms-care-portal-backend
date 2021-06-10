@@ -9,7 +9,6 @@ import {
 } from './utils';
 import runCronSchedules from './cronSchedules';
 
-
 const cron = require('node-cron');
 
 jest.mock('node-cron', () => {
