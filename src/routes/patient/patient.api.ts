@@ -214,4 +214,28 @@ router.put('/outreach/pending', auth, async (req, res) => {
   return res.status(404).json('Patiet Not Found');
 });
 
+router.put('/outreach/outreach', auth, async (req, res) => {
+  const { id } = req.body;
+  const { outreach } = req.body;
+  const currentPatient = await Patient.findById(new ObjectId(id));
+  if (currentPatient) {
+    return Patient.findByIdAndUpdate(new ObjectId(id), {
+      outreach: {
+        outreach,
+        more: currentPatient.outreach.more,
+        yes: currentPatient.outreach.yes,
+        lastMessageSent: currentPatient.outreach.lastMessageSent,
+        messageCount: currentPatient.outreach.messageCount,
+        lastDate: currentPatient.outreach.lastDate,
+        pending: currentPatient.outreach.pending,
+      },
+    })
+      .then(() => {
+        return res.status(200).json('Patiet Outreach Status Changed!');
+      })
+      .catch((err) => errorHandler(res, err.message));
+  }
+  return res.status(404).json('Patiet Not Found');
+});
+
 export default router;
