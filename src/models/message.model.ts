@@ -6,9 +6,9 @@ interface IMessage extends mongoose.Document {
   _id: string;
   phoneNumber: string;
   patientID: number;
-  sender: string;
+  sender: 'GLUCOSE BOT' | 'COACH' | 'PATIENT';
   message: string;
-  receivedWith: string;
+  receivingNumber: 'Glucose' | 'Coach';
   image: {
     data: Buffer;
     contentType: String;
@@ -22,7 +22,7 @@ const MessageSchema = new Schema({
   phoneNumber: { type: String, required: true },
   message: { type: String, required: true },
   sender: { type: String, required: true },
-  receivedWith: {type: String, required: false},
+  receivingNumber: { type: String, required: false },
   image: {
     data: { type: mongoose.Schema.Types.Buffer, required: false },
     contentType: { type: String, required: false },

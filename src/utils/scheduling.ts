@@ -5,6 +5,7 @@ import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_FROM_NUMBER,
+  TWILIO_FROM_NUMBER_GENERAL,
 } from './config';
 import { Patient } from '../models/patient.model';
 
@@ -27,9 +28,14 @@ const getPatientIdFromNumber = (number: any) => {
 
 // sends message, marks it as sent
 const sendMessage = (msg: IMessage) => {
+  const twilioNumber =
+    msg.sender === 'GLUCOSE BOT'
+      ? TWILIO_FROM_NUMBER
+      : TWILIO_FROM_NUMBER_GENERAL;
+
   twilio.messages.create({
     body: msg.message,
-    from: TWILIO_FROM_NUMBER,
+    from: twilioNumber,
     to: msg.phoneNumber,
   });
 
