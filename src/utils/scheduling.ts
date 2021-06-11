@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import schedule from 'node-schedule';
 import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
@@ -28,6 +29,7 @@ const getPatientIdFromNumber = (number: any) => {
 
 // sends message, marks it as sent
 const sendMessage = (msg: IMessage) => {
+  console.log('SENDING MSG!!', msg);
   const twilioNumber =
     msg.sender === 'GLUCOSE BOT'
       ? TWILIO_FROM_NUMBER
@@ -65,7 +67,7 @@ const scheduleMessages = (interval: number) => {
   const intervalStart = new Date();
   const intervalEnd = new Date(intervalStart.getTime());
   intervalEnd.setSeconds(intervalEnd.getSeconds() + interval);
-
+  console.log('running schedule');
   Message.find(
     {
       date: {
@@ -75,9 +77,13 @@ const scheduleMessages = (interval: number) => {
     },
     (err, docs) => {
       docs.forEach((doc) => {
-        schedule.scheduleJob(doc.date, () => {
-          sendMessage(doc);
-        });
+        console.log('found doc!', doc);
+        // Why is this necessary? If you are running this every 5 seconds, why run this?
+        // because if the server is down at the exact date of the message, the message will not be sent.
+        // and if we remove it, the only thing we loose is 5 seconds of precision when sending messages.
+        //        schedule.scheduleJob(doc.date, () => {
+        sendMessage(doc);
+        //        });
       });
     },
   );
