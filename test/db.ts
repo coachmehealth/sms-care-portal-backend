@@ -31,11 +31,16 @@ export const connectDatabase = async () => {
 };
 
 export const clearDatabse = async () => {
-  const collections = await mongoose.connection.collections;
-  for (const key in collections) {
-    const collection = collections[key];
-    // eslint-disable-next-line no-await-in-loop
-    await collection.deleteMany({});
+  try {
+    const collections = await mongoose.connection.collections;
+    for (const key in collections) {
+      const collection = collections[key];
+      // eslint-disable-next-line no-await-in-loop
+      await collection.deleteMany({});
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('could not clear database', error);
   }
 };
 
@@ -45,6 +50,7 @@ export const closeDatabase = async () => {
 };
 
 export const getToken = async (tokenObj: any, done: any) => {
+  // eslint-disable-next-line consistent-return
   hash('jest', 10, async (err, hashedPassword) => {
     if (err) {
       return err.message;

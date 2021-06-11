@@ -24,7 +24,7 @@ const manageIncomingMessages = async (
   if (!patient) {
     const twilioResponse = twiml.message(UNRECOGNIZED_PATIENT_RESPONSE);
 
-    res.writeHead(200, { 'Content-Type': 'text/xml' });
+    res.writeHead(204, { 'Content-Type': 'text/xml' });
     res.end(twilioResponse.toString());
     return;
   }
