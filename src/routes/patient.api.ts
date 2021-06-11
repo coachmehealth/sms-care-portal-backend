@@ -4,7 +4,7 @@ import { Outcome } from '../models/outcome.model';
 import { Patient, PatientForPhoneNumber } from '../models/patient.model';
 import auth from '../middleware/auth';
 import errorHandler from './error';
-import { Message } from '../models/message.model';
+import { MessageGeneral } from '../models/messageGeneral.model';
 
 const { ObjectId } = require('mongoose').Types;
 
@@ -146,8 +146,7 @@ router.get('/getPatientOutcomes/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Outcome.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList)
-        return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
 
       return res
         .status(200)
@@ -168,10 +167,9 @@ router.get('/getPatient/:patientID', auth, (req, res) => {
 
 router.get('/getPatientMessages/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
-  return Message.find({ patientID: new ObjectId(id) })
+  return MessageGeneral.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList)
-        return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
       return res.status(200).json(outcomeList);
     })
     .catch((err) => errorHandler(res, err.message));

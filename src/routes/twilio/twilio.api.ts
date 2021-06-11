@@ -3,7 +3,6 @@ import express from 'express';
 import { ObjectId } from 'mongodb';
 import twilio from 'twilio';
 import bodyParser from 'body-parser';
-import { Message } from '../../models/message.model';
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
@@ -11,6 +10,7 @@ import {
 } from '../../utils/config';
 import auth from '../../middleware/auth';
 import manageIncomingMessages from './twilio.functions';
+import { MessageGeneral } from '../../models/messageGeneral.model';
 
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
@@ -32,7 +32,7 @@ router.post('/sendMessage', auth, (req, res) => {
     to: recept,
   });
 
-  const outgoingMessage = new Message({
+  const outgoingMessage = new MessageGeneral({
     sent: true,
     phoneNumber: TWILIO_FROM_NUMBER_GENERAL,
     patientID,
@@ -59,7 +59,7 @@ router.post('/reply', async (req, res) =>
 );
 
 router.post('/receive', async (req, res) =>
-  manageIncomingMessages(req, res, UNRECOGNIZED_PATIENT_RESPONSE, 'Coach'),
+  manageIncomingMessages(req, res, UNRECOGNIZED_PATIENT_RESPONSE, 'General'),
 );
 
 export default router;
