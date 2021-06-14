@@ -57,45 +57,4 @@ describe('Scheduling tests', () => {
     expect(msgafter?.sent).toBeTruthy();
     done();
   });
-
-  it('does not send scheduled messages if it was not sent originally', async (done) => {
-    const patientPhone = '12';
-    const patient = new Patient({
-      firstName: 'jest',
-      lastName: 'jester',
-      coachID: '60ac2a4b01d7157738425700',
-      coachName: 'jest coach',
-      language: 'english',
-      phoneNumber: patientPhone,
-      prefTime: 12.2,
-      messagesSent: 0,
-      responseCount: 0,
-      reports: [],
-      enabled: true,
-    });
-
-    await patient.save();
-    const today = new Date();
-
-    const message = new Message({
-      phoneNumber: patientPhone,
-      patientID: '60aebf123fbd20eba237244e',
-      message: 'Test scheduled message',
-      sender: 'GLUCOSE BOT',
-      date: today,
-      sent: false,
-    });
-
-    await message.save();
-
-    const msgbefore = await Message.findOne({ phoneNumber: patientPhone });
-    expect(msgbefore?.sent).toBeFalsy();
-    initializeScheduler();
-    jest.useRealTimers();
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    jest.useFakeTimers();
-    const msgafter = await Message.findOne({ phoneNumber: patientPhone });
-    expect(msgafter?.sent).toBeFalsy();
-    done();
-  });
 });
