@@ -45,7 +45,8 @@ const sendMessage = (msg: IMessage) => {
     {
       sent: true,
     },
-    (err) => {
+    {},
+    (err: any) => {
       if (err) {
         console.log(err);
       }

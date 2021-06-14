@@ -5,6 +5,7 @@ import { Message } from '../models/message.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
 import { IPatient, Patient } from '../models/patient.model';
 import { Outcome, IOutcome } from '../models/outcome.model';
+import { Schedule } from '../models/schedule.model';
 
 interface IweekRecords {
   [char: string]: number;
@@ -15,7 +16,7 @@ export const dailyMidnightMessages = () => {
   Patient.find().then((patients) => {
     MessageTemplate.find({ type: 'Initial' })
       .then((MessageTemplates) => {
-        patients.forEach((patient) => {
+        patients.forEach(async (patient) => {
           if (patient.enabled) {
             const messages = MessageTemplates.filter(
               (template) =>
@@ -41,7 +42,7 @@ export const dailyMidnightMessages = () => {
               sender: 'GLUCOSE BOT',
               sent: false,
             });
-            newMessage.save();
+            await newMessage.save();
           }
         });
       })
@@ -188,13 +189,19 @@ export const getAverageAndCounts = (weekRecords: IweekRecords) => {
 
 export const getPatientOutcomes = async (patient: IPatient) => {
   if (patient.enabled) {
-    const today = new Date();
+    const lastMonday = new Date();
+    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
     const weeklyPatientOutcomes = await Outcome.find({
       date: {
         $gt: new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() - 7,
+          lastMonday.getFullYear(),
+          lastMonday.getMonth(),
+          lastMonday.getDate() - 7,
+        ),
+        $lt: new Date(
+          lastMonday.getFullYear(),
+          lastMonday.getMonth(),
+          lastMonday.getDate() + 1,
         ),
       },
       patientID: patient._id,
@@ -274,8 +281,7 @@ export const getWeekMessage = (
   return message;
 };
 
-export const weeklyReport = async () => {
-  console.log('Running weekly report messages');
+const sendOutcomesToPatients = async () => {
   const patients = await Patient.find();
 
   patients.forEach(async (patient) => {
@@ -294,4 +300,23 @@ export const weeklyReport = async () => {
       newMessage.save();
     }
   });
+};
+
+export const weeklyReport = async () => {
+  const schedules = await Schedule.findOne({});
+  if (!schedules) {
+    const lastMonday = new Date();
+    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
+    const newSchedule = new Schedule({ weeklyReport: lastMonday });
+    await newSchedule.save();
+    weeklyReport();
+  }
+  if (schedules) {
+    const dateDifference =
+      new Date().getTime() - schedules.weeklyReport.getTime();
+    if (dateDifference > 1000 * 3600 * 24 * 6.9) {
+      await Schedule.findOneAndUpdate({}, { weeklyReport: new Date() });
+      sendOutcomesToPatients();
+    }
+  }
 };

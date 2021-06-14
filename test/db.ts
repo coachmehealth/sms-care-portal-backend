@@ -1,14 +1,13 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 import mongoose from 'mongoose';
+import request from 'supertest';
+import express from 'express';
 import { hash } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { Coach } from '../src/models/coach.model';
 import authRouter from '../src/routes/coach.auth';
-
-const request = require('supertest');
-
-const express = require('express');
+import { DATABASE_URI } from '../src/utils/config';
 
 const authApp = express();
 
@@ -17,7 +16,7 @@ authApp.use('/', authRouter);
 
 export const connectDatabase = async () => {
   await mongoose.connect(
-    `mongodb://127.0.0.1:27017/jest-${uuidv4()}`,
+    `${DATABASE_URI}-${uuidv4()}`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -31,7 +30,7 @@ export const connectDatabase = async () => {
   );
 };
 
-export const clearDatabse = async () => {
+export const clearDatabase = async () => {
   try {
     const collections = await mongoose.connection.collections;
     for (const key in collections) {
