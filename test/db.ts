@@ -25,6 +25,7 @@ export const connectDatabase = async () => {
     },
     (err) => {
       if (err) {
+        console.log(err);
         process.exit(1);
       }
     },
