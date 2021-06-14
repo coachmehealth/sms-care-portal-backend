@@ -88,11 +88,5 @@ describe('Message utils', () => {
       scheduled: true,
       timezone: 'America/Los_Angeles',
     });
-
-    expect(logSpy).toBeCalledWith('Running weekly report messages');
-    expect(cron.schedule).toBeCalledWith('0 11 * * 1', expect.any(Function), {
-      scheduled: true,
-      timezone: 'America/Los_Angeles',
-    });
   });
 });
