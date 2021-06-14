@@ -264,19 +264,19 @@ export const getWeekMessage = (
   const message =
     patient.language.toLowerCase() === 'english'
       ? getMessageTemplate(
-          greenCount,
-          recordedCount,
-          weekAverage,
-          weekRecords,
-          'english',
-        )
+        greenCount,
+        recordedCount,
+        weekAverage,
+        weekRecords,
+        'english',
+      )
       : getMessageTemplate(
-          greenCount,
-          recordedCount,
-          weekAverage,
-          weekRecords,
-          'spanish',
-        );
+        greenCount,
+        recordedCount,
+        weekAverage,
+        weekRecords,
+        'spanish',
+      );
 
   return message;
 };
