@@ -16,7 +16,7 @@ authApp.use('/', authRouter);
 
 export const connectDatabase = async () => {
   await mongoose.connect(
-    `mongodb://127.0.0.1:27017/jest-${Math.round(Math.random() * 10000)}`,
+    'mongodb://127.0.0.1:27017/jest',
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
