@@ -16,7 +16,7 @@ export const dailyMidnightMessages = () => {
   Patient.find().then((patients) => {
     MessageTemplate.find({ type: 'Initial' })
       .then((MessageTemplates) => {
-        patients.forEach((patient) => {
+        patients.forEach(async (patient) => {
           if (patient.enabled) {
             const messages = MessageTemplates.filter(
               (template) =>
@@ -42,7 +42,7 @@ export const dailyMidnightMessages = () => {
               sender: 'BOT',
               sent: false,
             });
-            newMessage.save();
+            await newMessage.save();
           }
         });
       })
@@ -264,19 +264,19 @@ export const getWeekMessage = (
   const message =
     patient.language.toLowerCase() === 'english'
       ? getMessageTemplate(
-        greenCount,
-        recordedCount,
-        weekAverage,
-        weekRecords,
-        'english',
-      )
+          greenCount,
+          recordedCount,
+          weekAverage,
+          weekRecords,
+          'english',
+        )
       : getMessageTemplate(
-        greenCount,
-        recordedCount,
-        weekAverage,
-        weekRecords,
-        'spanish',
-      );
+          greenCount,
+          recordedCount,
+          weekAverage,
+          weekRecords,
+          'spanish',
+        );
 
   return message;
 };
@@ -303,7 +303,6 @@ const sendOutcomesToPatients = async () => {
 };
 
 export const weeklyReport = async () => {
-  console.log('Running weekly report messages');
   const schedules = await Schedule.findOne({});
   if (!schedules) {
     const lastMonday = new Date();
