@@ -2,6 +2,7 @@
 /* eslint-disable guard-for-in */
 import mongoose from 'mongoose';
 import { hash } from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { Coach } from '../src/models/coach.model';
 import authRouter from '../src/routes/coach.auth';
 
@@ -16,7 +17,7 @@ authApp.use('/', authRouter);
 
 export const connectDatabase = async () => {
   await mongoose.connect(
-    'mongodb://127.0.0.1:27017/jest',
+    `mongodb://127.0.0.1:27017/jest-${uuidv4()}`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
