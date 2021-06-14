@@ -1,3 +1,5 @@
+import request from 'supertest';
+import express from 'express';
 import { MessageGeneral } from '../../models/messageGeneral.model';
 import { Message } from '../../models/message.model';
 import { connectDatabase, closeDatabase, getToken } from '../../../test/db';
@@ -5,10 +7,6 @@ import twilioRouter from './twilio.api';
 import { Patient } from '../../models/patient.model';
 import { Coach } from '../../models/coach.model';
 import { Outcome } from '../../models/outcome.model';
-
-const request = require('supertest');
-
-const express = require('express');
 
 const twilioApp = express();
 
