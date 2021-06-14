@@ -1,6 +1,6 @@
 /* eslint global-require: 0 */
 import { ObjectId } from 'mongodb';
-// import { connectDatabase, closeDatabase, clearDatabase } from '../../test/db';
+import { connectDatabase, closeDatabase, clearDatabase } from '../../test/db';
 import {
   compareOutcomesByDate,
   returnColorRanges,
@@ -21,17 +21,19 @@ jest.mock('node-cron', () => {
   };
 });
 
-/* beforeAll(() => connectDatabase());
-beforeEach(() => {
-  jest.useFakeTimers();
-});
-afterEach(async () => {
-  jest.clearAllTimers();
-  jest.useRealTimers();
-  await clearDatabase();
-});
+if (process.env.NODE_ENV === 'development') {
+  beforeAll(() => connectDatabase());
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+  afterEach(async () => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+    await clearDatabase();
+  });
 
-afterAll(() => closeDatabase()); */
+  afterAll(() => closeDatabase());
+}
 
 const createPatient = async () => {
   const patient = new Patient({
@@ -122,29 +124,35 @@ describe('Message utils', () => {
     expect(getAverageAndCounts(weeklyData)).toStrictEqual([117, 4, 2]);
   });
 
-  it.skip('Runs CRON every day at 12:00', async (done) => {
-    const logSpy = jest.spyOn(console, 'log');
-    cron.schedule.mockImplementation(async (frequency: any, callback: any) =>
-      callback(),
-    );
-    await createPatient();
-    await createMessageTemplate();
-    const cronRunTime = new Date().getTime();
-    runCronSchedules();
-    expect(logSpy).toBeCalledWith('Running batch of scheduled messages');
-    expect(cron.schedule).toBeCalledWith('0 0 5 * * *', expect.any(Function), {
-      scheduled: true,
-      timezone: 'America/Los_Angeles',
+  if (process.env.NODE_ENV === 'development') {
+    it('Runs CRON every day at 12:00', async (done) => {
+      const logSpy = jest.spyOn(console, 'log');
+      cron.schedule.mockImplementation(async (frequency: any, callback: any) =>
+        callback(),
+      );
+      await createPatient();
+      await createMessageTemplate();
+      const cronRunTime = new Date().getTime();
+      runCronSchedules();
+      expect(logSpy).toBeCalledWith('Running batch of scheduled messages');
+      expect(cron.schedule).toBeCalledWith(
+        '0 0 5 * * *',
+        expect.any(Function),
+        {
+          scheduled: true,
+          timezone: 'America/Los_Angeles',
+        },
+      );
+      await waitJest();
+      const messages = await Message.find({ phoneNumber: '111' });
+      expect(messages[0]?.sent).toBeFalsy();
+      expect(Math.abs(messages[0].date.getTime() - cronRunTime)).toBeLessThan(
+        1000 * 90,
+      );
+      expect(
+        Math.abs(messages[0].date.getTime() - cronRunTime),
+      ).toBeGreaterThan(1000 * 30);
+      done();
     });
-    await waitJest();
-    const messages = await Message.find({ phoneNumber: '111' });
-    expect(messages[0]?.sent).toBeFalsy();
-    expect(Math.abs(messages[0].date.getTime() - cronRunTime)).toBeLessThan(
-      1000 * 90,
-    );
-    expect(Math.abs(messages[0].date.getTime() - cronRunTime)).toBeGreaterThan(
-      1000 * 30,
-    );
-    done();
-  });
+  }
 });
