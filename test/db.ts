@@ -1,14 +1,12 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 import mongoose from 'mongoose';
+import request from 'supertest';
+import express from 'express';
 import { hash } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { Coach } from '../src/models/coach.model';
 import authRouter from '../src/routes/coach.auth';
-
-const request = require('supertest');
-
-const express = require('express');
 
 const authApp = express();
 
