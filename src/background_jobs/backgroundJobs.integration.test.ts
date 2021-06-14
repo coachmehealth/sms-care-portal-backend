@@ -1,11 +1,6 @@
 /* eslint global-require: 0 */
 import { ObjectId } from 'mongodb';
-import {
-  connectDatabase,
-  closeDatabase,
-  clearDatabase,
-  waitJest,
-} from '../../test/db';
+import { connectDatabase, closeDatabase, waitJest } from '../../test/db';
 import runCronSchedules from './cronSchedules';
 import { Patient } from '../models/patient.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
@@ -21,16 +16,6 @@ jest.mock('node-cron', () => {
 
 if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-  afterEach(async () => {
-    jest.runOnlyPendingTimers();
-    jest.clearAllTimers();
-    jest.useRealTimers();
-    await clearDatabase();
-  });
-
   afterAll(() => closeDatabase());
 
   const createPatient = async () => {
@@ -60,6 +45,7 @@ if (process.env.NODE_ENV === 'development') {
   };
 
   describe('Message utils', () => {
+    jest.useFakeTimers();
     it('Runs CRON every day at 12:00', async (done) => {
       const logSpy = jest.spyOn(console, 'log');
       cron.schedule.mockImplementation(async (frequency: any, callback: any) =>

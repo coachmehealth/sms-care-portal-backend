@@ -1,26 +1,14 @@
-import {
-  connectDatabase,
-  closeDatabase,
-  clearDatabase,
-  waitJest,
-} from '../../test/db';
+import { connectDatabase, closeDatabase, waitJest } from '../../test/db';
 import initializeScheduler from './scheduling';
 import { Message } from '../models/message.model';
 import { Patient } from '../models/patient.model';
 
 if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-  afterEach(async () => {
-    jest.clearAllTimers();
-    await clearDatabase();
-  });
-
   afterAll(() => closeDatabase());
 
   describe('Scheduling tests', () => {
+    jest.useFakeTimers();
     it('sends scheduled messages', async (done) => {
       const patientPhone = '12';
       const patient = new Patient({
