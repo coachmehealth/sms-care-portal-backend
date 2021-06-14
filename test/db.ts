@@ -7,6 +7,7 @@ import { hash } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { Coach } from '../src/models/coach.model';
 import authRouter from '../src/routes/coach.auth';
+import { DATABASE_URI } from '../src/utils/config';
 
 const authApp = express();
 
@@ -15,7 +16,7 @@ authApp.use('/', authRouter);
 
 export const connectDatabase = async () => {
   await mongoose.connect(
-    `mongodb://127.0.0.1:27017/jest-${uuidv4()}`,
+    `${DATABASE_URI}-${uuidv4()}`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
