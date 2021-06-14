@@ -1,4 +1,9 @@
-import { connectDatabase, closeDatabase, clearDatabase } from '../../test/db';
+import {
+  connectDatabase,
+  closeDatabase,
+  clearDatabase,
+  waitJest,
+} from '../../test/db';
 import initializeScheduler from './scheduling';
 import { Message } from '../models/message.model';
 import { Patient } from '../models/patient.model';
@@ -10,20 +15,11 @@ if (process.env.NODE_ENV === 'development') {
   });
   afterEach(async () => {
     jest.clearAllTimers();
-    jest.useRealTimers();
     await clearDatabase();
   });
 
   afterAll(() => closeDatabase());
-}
 
-const waitJest = async (waitTime: number) => {
-  jest.useRealTimers();
-  await new Promise((resolve) => setTimeout(resolve, waitTime));
-  jest.useFakeTimers();
-};
-
-if (process.env.NODE_ENV === 'development') {
   describe('Scheduling tests', () => {
     it('sends scheduled messages', async (done) => {
       const patientPhone = '12';
@@ -64,5 +60,9 @@ if (process.env.NODE_ENV === 'development') {
       expect(msgafter?.sent).toBeTruthy();
       done();
     });
+  });
+} else {
+  it('is not development', () => {
+    expect(1).toBeTruthy();
   });
 }
