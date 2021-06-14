@@ -53,8 +53,6 @@ router.post('/sendMessage', auth, (req, res) => {
     .catch((err) => console.log(err));
 });
 
-// this route receives and parses the message from one user, then responds accordingly with the appropriate output.
-// This route is used for the glucose tracker.
 router.post('/reply', async (req, res) =>
   manageIncomingMessages(req, res, UNRECOGNIZED_PATIENT_RESPONSE, 'Glucose'),
 );
