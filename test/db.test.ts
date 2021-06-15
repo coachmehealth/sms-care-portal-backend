@@ -17,4 +17,8 @@ if (process.env.NODE_ENV === 'development') {
     expect(tokenObject.token).toBeTruthy();
     done();
   });
+} else {
+  it('db tests production', () => {
+    expect(1).toBeTruthy();
+  });
 }
