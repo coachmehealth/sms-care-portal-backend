@@ -9,7 +9,7 @@ interface IOutcome extends mongoose.Document {
   date: Date;
   response: string;
   value: number;
-  alertType: string;
+  alertType: '<70' | '<80' | 'green' | 'yellow' | 'red' | '>300';
 }
 
 const OutcomeSchema = new Schema({

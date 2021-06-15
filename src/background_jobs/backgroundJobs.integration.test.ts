@@ -1,12 +1,18 @@
 /* eslint global-require: 0 */
 import { ObjectId } from 'mongodb';
-import { connectDatabase, closeDatabase, waitJest } from '../../test/db';
+import {
+  connectDatabase,
+  closeDatabase,
+  clearDatabase,
+  waitJest,
+} from '../../test/db';
 import runCronSchedules from './cronSchedules';
-import { Patient } from '../models/patient.model';
+import { IPatient, Patient } from '../models/patient.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
 import { Message } from '../models/message.model';
 import { dailyMidnightMessages, weeklyReport } from './utils';
 import { Schedule } from '../models/schedule.model';
+import { Outcome } from '../models/outcome.model';
 
 const cron = require('node-cron');
 
@@ -18,6 +24,7 @@ jest.mock('node-cron', () => {
 
 if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
+  beforeEach(async () => clearDatabase());
   afterAll(() => closeDatabase());
 
   const createPatient = async () => {
@@ -37,6 +44,23 @@ if (process.env.NODE_ENV === 'development') {
     await patient.save();
   };
 
+  const createOutcome = async (
+    patient: IPatient,
+    date: Date,
+    value: number,
+    alertType: string,
+  ) => {
+    const newOutcome = new Outcome({
+      patientID: patient._id,
+      phoneNumber: patient.phoneNumber,
+      date,
+      response: `my glucose is ${value}`,
+      value,
+      alertType,
+    });
+    await newOutcome.save();
+  };
+
   const createMessageTemplate = async () => {
     const newMessageTemplate = new MessageTemplate({
       text: 'Health is fun!',
@@ -44,6 +68,13 @@ if (process.env.NODE_ENV === 'development') {
       type: 'Initial',
     });
     await newMessageTemplate.save();
+  };
+
+  const getDateRelativeToMonday = (offset: number) => {
+    const lastMonday = new Date();
+    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
+    lastMonday.setDate(lastMonday.getDate() + offset);
+    return lastMonday;
   };
 
   describe('Message utils', () => {
@@ -80,12 +111,50 @@ if (process.env.NODE_ENV === 'development') {
       done();
     });
 
-    it('sends weekly reports and there is no previous schedule data', async (done) => {
-      await new Schedule({ weeklyReport: new Date() });
+    it('weekly reports saves the time it last ran. And does not run', async (done) => {
       weeklyReport();
       await waitJest(500);
       const schedule = await Schedule.find({});
       expect(schedule[0]?.weeklyReport).toBeTruthy();
+      done();
+    });
+
+    it('weekly reports does not run if it ran this week', async (done) => {
+      const tuesdayAfterLastMonday = getDateRelativeToMonday(1);
+      await new Schedule({ weeklyReport: tuesdayAfterLastMonday }).save();
+      weeklyReport();
+      await waitJest(500);
+      const schedule = await Schedule.find({});
+      expect(schedule[0]?.weeklyReport > tuesdayAfterLastMonday).toBeFalsy();
+      done();
+    });
+
+    it('weekly reports run if it has not run this week', async (done) => {
+      const lastSunday = getDateRelativeToMonday(-1);
+      await new Schedule({ weeklyReport: lastSunday }).save();
+      await createPatient();
+      const patient = await Patient.findOne({});
+      if (patient) {
+        // eslint-disable-next-line prettier/prettier
+        await createOutcome(patient, getDateRelativeToMonday(1), 97, 'green');
+        // eslint-disable-next-line prettier/prettier
+        await createOutcome(patient, getDateRelativeToMonday(0), 77, '<80');
+        // eslint-disable-next-line prettier/prettier
+        await createOutcome(patient, getDateRelativeToMonday(-1), 99, 'green');
+        // eslint-disable-next-line prettier/prettier
+        await createOutcome(patient, getDateRelativeToMonday(-2), 121, 'green');
+        // eslint-disable-next-line prettier/prettier
+        await createOutcome(patient, getDateRelativeToMonday(-5), 150, 'yellow');
+      }
+
+      weeklyReport();
+      await waitJest(500);
+      const message = await Message.findOne({});
+      const schedule = await Schedule.find({});
+      expect(schedule[0]?.weeklyReport > lastSunday).toBeTruthy();
+      expect(message?.message.includes('Tue')).toBeFalsy();
+      expect(message?.message.includes('Sat')).toBeTruthy();
+      expect(message?.sent).toBeFalsy();
       done();
     });
   });

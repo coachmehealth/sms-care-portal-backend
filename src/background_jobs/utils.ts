@@ -32,12 +32,10 @@ export const dailyMidnightMessages = () => {
             }
             const randomVal = Math.floor(Math.random() * messages.length);
             const message = messages[randomVal].text;
-            const date = new Date();
-            date.setMinutes(date.getMinutes() + 1);
             const newMessage = new Message({
               patientID: new ObjectId(patient._id),
               phoneNumber: patient.phoneNumber,
-              date,
+              date: new Date(),
               message,
               sender: 'BOT',
               sent: false,
@@ -303,17 +301,16 @@ const sendOutcomesToPatients = async () => {
 
 export const weeklyReport = async () => {
   const schedules = await Schedule.findOne({});
+  const lastMonday = new Date();
+  lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
   if (!schedules) {
-    const lastMonday = new Date();
-    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
     const newSchedule = new Schedule({ weeklyReport: lastMonday });
     await newSchedule.save();
     weeklyReport();
   }
   if (schedules) {
-    const dateDifference =
-      new Date().getTime() - schedules.weeklyReport.getTime();
-    if (dateDifference > 1000 * 3600 * 24 * 6.9) {
+    const dateDifference = lastMonday.getDate() - schedules.weeklyReport.getDate();
+    if (dateDifference > 0) {
       await Schedule.findOneAndUpdate({}, { weeklyReport: new Date() });
       sendOutcomesToPatients();
     }
