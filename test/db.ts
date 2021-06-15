@@ -49,7 +49,7 @@ export const closeDatabase = async () => {
   await mongoose.connection.close();
 };
 
-export const getToken = async (tokenObj: any, done: any) => {
+export const getTestToken = async (tokenObj: any, done: any) => {
   // eslint-disable-next-line consistent-return
   hash('jest', 10, async (err, hashedPassword) => {
     if (err) {
