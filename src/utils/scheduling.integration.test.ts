@@ -1,7 +1,7 @@
 import { connectDatabase, closeDatabase, waitJest } from '../../test/db';
-import initializeScheduler from './scheduling';
 import { Message } from '../models/message.model';
 import { Patient } from '../models/patient.model';
+import initializeScheduler from './scheduling';
 
 if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
