@@ -1,4 +1,4 @@
-import schedule from 'node-schedule';
+/* eslint-disable no-console */
 import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
 import {
@@ -70,9 +70,7 @@ const scheduleMessages = (interval: number) => {
     },
     (err, docs) => {
       docs.forEach((doc) => {
-        schedule.scheduleJob(doc.date, () => {
-          sendMessage(doc);
-        });
+        sendMessage(doc);
       });
     },
   );

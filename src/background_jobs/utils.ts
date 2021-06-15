@@ -258,9 +258,8 @@ export const getWeekMessage = (
   patient: IPatient,
   weekRecords: IweekRecords,
 ) => {
-  const [weekAverage, recordedCount, greenCount] = getAverageAndCounts(
-    weekRecords,
-  );
+  const [weekAverage, recordedCount, greenCount] =
+    getAverageAndCounts(weekRecords);
   const message =
     patient.language.toLowerCase() === 'english'
       ? getMessageTemplate(

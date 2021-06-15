@@ -70,3 +70,10 @@ export const getToken = async (tokenObj: any, done: any) => {
     done();
   });
 };
+
+export const waitJest = async (waitTime: number) => {
+  jest.useRealTimers();
+  // eslint-disable-next-line @typescript-eslint/no-implied-eval
+  await new Promise((resolve) => setTimeout(resolve, waitTime));
+  jest.useFakeTimers();
+};
