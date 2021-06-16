@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -5,7 +6,7 @@ import socket from 'socket.io';
 import connectToDatabase from './utils/mongo';
 import './utils/config';
 
-import patientRouter from './routes/patient.api';
+import patientRouter from './routes/patient/patient.api';
 import messageRouter from './routes/messages/messages.api';
 import coachRouter from './routes/coach.auth';
 import twilioRouter from './routes/twilio/twilio.api';

@@ -2,10 +2,14 @@ import request from 'supertest';
 import express from 'express';
 import { MessageGeneral } from '../../models/messageGeneral.model';
 import { Message } from '../../models/message.model';
-import { connectDatabase, closeDatabase, getTestToken } from '../../../test/db';
+import {
+  connectDatabase,
+  closeDatabase,
+  clearDatabase,
+  getTestToken,
+  createPatient,
+} from '../../../test/db';
 import twilioRouter from './twilio.api';
-import { Patient } from '../../models/patient.model';
-import { Coach } from '../../models/coach.model';
 import { Outcome } from '../../models/outcome.model';
 
 const twilioApp = express();
@@ -19,9 +23,10 @@ if (process.env.NODE_ENV === 'development') {
     await connectDatabase();
     await getTestToken(tokenObject, done);
   });
+  beforeEach(async () => clearDatabase());
   afterAll(() => closeDatabase());
 
-  describe('Twilio api properly receives messages', () => {
+  describe('Twilio api integration properly handles messages', () => {
     it('sendMessage route sends messages to MessageGeneral database, not to glucoseMessages database', async () => {
       const res = await request(twilioApp)
         .post('/sendMessage')
@@ -38,26 +43,14 @@ if (process.env.NODE_ENV === 'development') {
         message: 'Test message',
       });
       expect(messages).toBeTruthy();
+      console.log(messages);
 
       const glucoseMessages = await Message.find({});
       expect(glucoseMessages.length).toBe(0);
     });
 
     it('receive route saves incoming message from a known patient to MessagesGeneral', async (done) => {
-      const coach = await Coach.find({});
-      await new Patient({
-        firstName: 'jest',
-        lastName: 'jester',
-        coachID: coach[0]._id,
-        coachName: coach[0].firstName,
-        language: 'english',
-        phoneNumber: '1112223337',
-        prefTime: 12.2,
-        messagesSent: 0,
-        responseCount: 0,
-        reports: [],
-        enabled: true,
-      }).save();
+      await createPatient('1112223337');
 
       const res = await request(twilioApp).post('/receive').type('form').send({
         Body: 'receive message',
@@ -75,6 +68,7 @@ if (process.env.NODE_ENV === 'development') {
     });
 
     it('reply route saves incoming message from a known patient to Message and creates new outcome', async (done) => {
+      await createPatient('1112223337');
       const generalMessages = await MessageGeneral.find({});
       const res = await request(twilioApp).post('/reply').type('form').send({
         Body: 'My glucose is 101',

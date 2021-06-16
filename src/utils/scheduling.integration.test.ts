@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === 'development') {
       const msgbefore = await Message.findOne({ phoneNumber: patientPhone });
       expect(msgbefore?.sent).toBeFalsy();
       initializeScheduler();
-      await waitJest(300);
+      await waitJest(200);
       const msgafter = await Message.findOne({ phoneNumber: patientPhone });
       expect(msgafter?.sent).toBeTruthy();
       done();

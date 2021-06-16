@@ -5,9 +5,13 @@ import request from 'supertest';
 import express from 'express';
 import { hash } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { ObjectId } from 'mongodb';
 import { Coach } from '../src/models/coach.model';
 import authRouter from '../src/routes/coach.auth';
 import { DATABASE_URI } from '../src/utils/config';
+import { IPatient, Patient } from '../src/models/patient.model';
+import { Message } from '../src/models/message.model';
+import { MessageGeneral } from '../src/models/messageGeneral.model';
 
 const authApp = express();
 
@@ -76,4 +80,57 @@ export const waitJest = async (waitTime: number) => {
   // eslint-disable-next-line @typescript-eslint/no-implied-eval
   await new Promise((resolve) => setTimeout(resolve, waitTime));
   jest.useFakeTimers();
+};
+
+export const createPatient = async (phoneNumber: string) => {
+  const patient = new Patient({
+    firstName: 'jest',
+    lastName: 'jester',
+    coachID: new ObjectId(1),
+    coachName: 'jest coach',
+    language: 'english',
+    phoneNumber,
+    prefTime: 12.2,
+    messagesSent: 0,
+    responseCount: 0,
+    reports: [],
+    enabled: true,
+  });
+  await patient.save();
+};
+
+export const createMessage = async (
+  patient: IPatient,
+  message: string,
+  sent: boolean,
+  sender: 'GLUCOSE BOT' | 'PATIENT',
+) => {
+  const newMessage = new Message({
+    phoneNumber: patient.phoneNumber,
+    patientID: patient._id,
+    sender,
+    message,
+    date: new Date(),
+    sent,
+    receivedWith: 'Glucose',
+  });
+  await newMessage.save();
+};
+
+export const createMessageGeneral = async (
+  patient: IPatient,
+  message: string,
+  sent: boolean,
+  sender: 'COACH' | 'PATIENT',
+) => {
+  const newMessageGeneral = new MessageGeneral({
+    phoneNumber: patient.phoneNumber,
+    patientID: patient._id,
+    sender,
+    message,
+    date: new Date(),
+    sent,
+    receivedWith: 'General',
+  });
+  await newMessageGeneral.save();
 };
