@@ -12,11 +12,7 @@ export const parseTwilioFromNumber = (rawNumber: string | undefined) => {
   return rawNumber.replace(/[^0-9.]/g, '');
 };
 
-const TWILIO_SID = process.env.TWILIO_ACCOUNT_SID || 'AC';
-export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || '123456';
-
-export const TWILIO_ACCOUNT_SID =
-  TWILIO_SID.substring(0, 2) === 'AC' ? TWILIO_SID : 'AC';
+export const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
 
 export const TWILIO_FROM_NUMBER = parseTwilioFromNumber(
   process.env.TWILIO_FROM_NUMBER,

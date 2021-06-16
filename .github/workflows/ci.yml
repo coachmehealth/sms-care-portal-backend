@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TWILIO_ACCOUNT_SID: some_fake_string
+      TWILIO_ACCOUNT_SID: AC-some_fake_string
       TWILIO_AUTH_TOKEN: some_fake_string
       TWILIO_FROM_NUMBER: 1112223333
       JWT_SECRET: 6Ngm5GMM1OcZ8JZW
