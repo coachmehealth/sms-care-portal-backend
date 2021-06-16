@@ -1,14 +1,14 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Standard React CI
+name: Staging React CI
 
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ staging ]
   pull_request:
-    branches: [master]
+    branches: [staging]
 
 jobs:
   build:
@@ -18,8 +18,9 @@ jobs:
       TWILIO_ACCOUNT_SID: AC-some_fake_string
       TWILIO_AUTH_TOKEN: some_fake_string
       TWILIO_FROM_NUMBER: 1112223333
-      TWILIO_FROM_NUMBER_GENERAL: 1112223334
       JWT_SECRET: 6Ngm5GMM1OcZ8JZW
+      APTIBLE_API_TOKEN: ${{ secrets.APTIBLE_API_TOKEN }}
+      APTIBLE_APP_NAME: ${{ secrets.APTIBLE_APP_NAME }}
 
     steps:
     - uses: actions/checkout@v2
@@ -35,3 +36,8 @@ jobs:
       run: npx eslint .
     - name: Run Unit Tests
       run: yarn test
+    - name: Deploy to staging
+      if: github.ref == 'refs/heads/staging' && job.status == 'success'
+      run: |
+        git remote add aptible ${{ secrets.APTIBLE_STAGING_GIT_URL }}
+        git push aptible HEAD:master -f

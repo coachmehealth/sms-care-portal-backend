@@ -1,7 +1,7 @@
 import { connectDatabase, closeDatabase, waitJest } from '../../test/db';
-import initializeScheduler from './scheduling';
 import { Message } from '../models/message.model';
 import { Patient } from '../models/patient.model';
+import initializeScheduler from './scheduling';
 
 if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === 'development') {
       const msgbefore = await Message.findOne({ phoneNumber: patientPhone });
       expect(msgbefore?.sent).toBeFalsy();
       initializeScheduler();
-      await waitJest(1200);
+      await waitJest(300);
       const msgafter = await Message.findOne({ phoneNumber: patientPhone });
       expect(msgafter?.sent).toBeTruthy();
       done();

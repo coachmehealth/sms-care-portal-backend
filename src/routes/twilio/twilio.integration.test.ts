@@ -2,7 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import { MessageGeneral } from '../../models/messageGeneral.model';
 import { Message } from '../../models/message.model';
-import { connectDatabase, closeDatabase, getToken } from '../../../test/db';
+import { connectDatabase, closeDatabase, getTestToken } from '../../../test/db';
 import twilioRouter from './twilio.api';
 import { Patient } from '../../models/patient.model';
 import { Coach } from '../../models/coach.model';
@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'development') {
   const tokenObject = { token: [] };
   beforeAll(async (done: any) => {
     await connectDatabase();
-    await getToken(tokenObject, done);
+    await getTestToken(tokenObject, done);
   });
   afterAll(() => closeDatabase());
 

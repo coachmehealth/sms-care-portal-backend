@@ -1,4 +1,3 @@
-/* eslint global-require: 0 */
 import {
   compareOutcomesByDate,
   returnColorRanges,

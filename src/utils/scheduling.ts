@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import schedule from 'node-schedule';
 import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
 import {
@@ -76,12 +75,7 @@ const scheduleMessages = (interval: number) => {
     },
     (err, docs) => {
       docs.forEach((doc) => {
-        // Why is this necessary? If you are running this every 5 seconds, why run this?
-        // because if the server is down at the exact date of the message, the message will not be sent.
-        // and if we remove it, the only thing we loose is 5 seconds of precision when sending messages.
-        schedule.scheduleJob(doc.date, () => {
-          sendMessage(doc);
-        });
+        sendMessage(doc);
       });
     },
   );
