@@ -43,7 +43,6 @@ if (process.env.NODE_ENV === 'development') {
         message: 'Test message',
       });
       expect(messages).toBeTruthy();
-      console.log(messages);
 
       const glucoseMessages = await Message.find({});
       expect(glucoseMessages.length).toBe(0);
