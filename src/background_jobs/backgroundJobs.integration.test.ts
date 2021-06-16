@@ -142,6 +142,8 @@ if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(-1), 99, 'green');
         // eslint-disable-next-line prettier/prettier
+        await createOutcome(patient, getDateRelativeToMonday(-.6), 111, 'green');
+        // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(-2), 121, 'green');
         // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(-5), 150, 'yellow');
@@ -154,6 +156,7 @@ if (process.env.NODE_ENV === 'development') {
       expect(schedule[0]?.weeklyReport > lastSunday).toBeTruthy();
       expect(message?.message.includes('Tue')).toBeFalsy();
       expect(message?.message.includes('Sat')).toBeTruthy();
+      expect(message?.message.includes('111')).toBeTruthy();
       expect(message?.sent).toBeFalsy();
       done();
     });
