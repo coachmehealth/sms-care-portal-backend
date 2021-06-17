@@ -1,5 +1,3 @@
-/* eslint global-require: 0 */
-
 import {
   compareOutcomesByDate,
   returnColorRanges,
@@ -7,18 +5,6 @@ import {
   getWeeklyList,
   getMessageTemplate,
 } from './utils';
-import runCronSchedules from './cronSchedules';
-
-
-const cron = require('node-cron');
-
-jest.mock('node-cron', () => {
-  return {
-    schedule: jest.fn(),
-  };
-});
-
-jest.useFakeTimers();
 
 describe('Message utils', () => {
   it('compareOutcomesByDate() Compares outcomes objects by date', () => {
@@ -76,24 +62,5 @@ describe('Message utils', () => {
       thursday: 120,
     };
     expect(getAverageAndCounts(weeklyData)).toStrictEqual([117, 4, 2]);
-  });
-
-  it('Runs CRON every day at 12:00 and at 11:00 AM every monday', () => {
-    const logSpy = jest.spyOn(console, 'log');
-    cron.schedule.mockImplementation(async (frequency: any, callback: any) =>
-      callback(),
-    );
-    runCronSchedules();
-    expect(logSpy).toBeCalledWith('Running batch of scheduled messages');
-    expect(cron.schedule).toBeCalledWith('0 0 5 * * *', expect.any(Function), {
-      scheduled: true,
-      timezone: 'America/Los_Angeles',
-    });
-
-    expect(logSpy).toBeCalledWith('Running weekly report messages');
-    expect(cron.schedule).toBeCalledWith('0 11 * * 1', expect.any(Function), {
-      scheduled: true,
-      timezone: 'America/Los_Angeles',
-    });
   });
 });
