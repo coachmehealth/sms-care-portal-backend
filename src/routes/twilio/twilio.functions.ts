@@ -77,7 +77,7 @@ const manageIncomingMessages = async (
     );
 
     const outgoingMessage = new Message({
-      sent: true,
+      sent: false,
       phoneNumber: fromPhoneNumber,
       patientID: patient._id, // lost on this
       message: responseMessage,

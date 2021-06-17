@@ -75,8 +75,13 @@ if (process.env.NODE_ENV === 'development') {
       });
       expect(res.statusCode).toBe(200);
 
-      const messages = await Message.findOne({ message: 'My glucose is 101' });
-      expect(messages).toBeTruthy();
+      const messages = await Message.find();
+      expect(messages[0]).toBeTruthy();
+      expect(messages[1]).toBeTruthy();
+      expect(messages[1].message).toBe(
+        'Congratulations! You’re in the green today - keep it up!',
+      );
+      expect(messages[1].sent).toBeFalsy();
       const newGeneralMessages = await MessageGeneral.find({});
       expect(newGeneralMessages.length === generalMessages.length).toBeTruthy();
 

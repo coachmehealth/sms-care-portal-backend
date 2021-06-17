@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
+import { MessageGeneral } from '../models/messageGeneral.model';
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
@@ -27,7 +28,7 @@ const getPatientIdFromNumber = (number: any) => {
 };
 
 // sends message, marks it as sent
-const sendMessage = (msg: IMessage) => {
+const sendMessage = async (msg: IMessage) => {
   const twilioNumber =
     msg.sender === 'GLUCOSE BOT'
       ? TWILIO_FROM_NUMBER
@@ -39,16 +40,16 @@ const sendMessage = (msg: IMessage) => {
     to: msg.phoneNumber,
   });
 
-  Message.findOneAndUpdate(
+  await Message.findOneAndUpdate(
     { _id: msg.id },
     {
       sent: true,
     },
-    {},
-    (err: any) => {
-      if (err) {
-        console.log(err);
-      }
+  );
+  await MessageGeneral.findOneAndUpdate(
+    { _id: msg.id },
+    {
+      sent: true,
     },
   );
 
@@ -62,23 +63,28 @@ const sendMessage = (msg: IMessage) => {
 };
 
 // selects all messages which should be sent within the next __ seconds, and schedules them to be sent
-const scheduleMessages = (interval: number) => {
+const scheduleMessages = async (interval: number) => {
   const intervalStart = new Date();
   const intervalEnd = new Date(intervalStart.getTime());
   intervalEnd.setSeconds(intervalEnd.getSeconds() + interval);
-  Message.find(
-    {
-      date: {
-        $lt: intervalEnd,
-      },
-      sent: false,
+  const messages = await Message.find({
+    date: {
+      $lt: intervalEnd,
     },
-    (err, docs) => {
-      docs.forEach((doc) => {
-        sendMessage(doc);
-      });
+    sent: false,
+  });
+
+  const messagesGeneral = await MessageGeneral.find({
+    date: {
+      $lt: intervalEnd,
     },
-  );
+    sent: false,
+  });
+  const docs = [...messagesGeneral, ...messages];
+
+  docs.forEach((doc: any) => {
+    sendMessage(doc);
+  });
 };
 
 const initializeScheduler = () => {

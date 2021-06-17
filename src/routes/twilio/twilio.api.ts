@@ -1,18 +1,10 @@
 /* eslint-disable radix */
 import express from 'express';
 import { ObjectId } from 'mongodb';
-import twilio from 'twilio';
 import bodyParser from 'body-parser';
-import {
-  TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN,
-  TWILIO_FROM_NUMBER_GENERAL,
-} from '../../utils/config';
 import auth from '../../middleware/auth';
 import manageIncomingMessages from './twilio.functions';
 import { MessageGeneral } from '../../models/messageGeneral.model';
-
-const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -26,15 +18,9 @@ router.post('/sendMessage', auth, (req, res) => {
   const patientID = new ObjectId(req.body.patientID);
   const date = new Date();
 
-  twilioClient.messages.create({
-    body: content,
-    from: TWILIO_FROM_NUMBER_GENERAL,
-    to: recept,
-  });
-
   const outgoingMessage = new MessageGeneral({
-    sent: true,
-    phoneNumber: TWILIO_FROM_NUMBER_GENERAL,
+    sent: false,
+    phoneNumber: recept,
     patientID,
     message: content,
     sender: 'COACH',
