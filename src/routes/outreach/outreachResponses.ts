@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 import { Patient, IPatient } from '../../models/patient.model';
-import { Message } from '../../models/message.model';
+import { MessageGeneral } from '../../models/messageGeneral.model';
 
 type SupportedLanguage = 'english' | 'spanish';
 
@@ -93,12 +93,12 @@ const sendMessageMinutesFromNow = async (
   const todayPlusMinutes = new Date();
   todayPlusMinutes.setMinutes(todayPlusMinutes.getMinutes() + minutes);
 
-  const newMessage = new Message({
+  const newMessage = new MessageGeneral({
     sent: false,
     phoneNumber: patient.phoneNumber,
     patientID: patient._id,
     message,
-    sender: 'Outreach',
+    sender: 'OUTREACH',
     date: todayPlusMinutes,
   });
 
@@ -120,11 +120,10 @@ const responseLanguage = (language?: string): SupportedLanguage => {
 
 export const outreachMessage = async (
   patient: IPatient,
-  yesMessage?: boolean,
-  moreMessage?: boolean,
+  yesMessage: boolean = false,
 ): Promise<string[]> => {
   const language = responseLanguage(patient.language);
-  if (patient.outreach.lastMessageSent === '0') {
+  if (patient.outreach.lastMessageSent === '0' && !patient.outreach.yes) {
     const response =
       language === 'english'
         ? DefaultResponses.zero.english(
@@ -148,20 +147,16 @@ export const outreachMessage = async (
       {
         outreach: {
           outreach: true,
-          more: false,
           yes: false,
+          complete: false,
           lastMessageSent: '1',
           lastDate: new Date(),
         },
       },
     );
-  }
-
-  if (
+  } else if (
     patient.outreach.lastMessageSent === '1' &&
-    patient.outreach.yes === false &&
-    moreMessage === true &&
-    yesMessage === false
+    !patient.outreach.yes
   ) {
     const response =
       language === 'english'
@@ -179,21 +174,16 @@ export const outreachMessage = async (
       {
         outreach: {
           outreach: true,
-          more: true,
           yes: false,
+          complete: false,
           lastMessageSent: '2',
           lastDate: new Date(),
         },
       },
     );
-  }
-
-  if (
+  } else if (
     patient.outreach.lastMessageSent === '2' &&
-    patient.outreach.yes === false &&
-    moreMessage === true &&
-    patient.outreach.more === true &&
-    yesMessage === false
+    !patient.outreach.yes
   ) {
     const response =
       language === 'english'
@@ -209,29 +199,14 @@ export const outreachMessage = async (
       {
         outreach: {
           outreach: true,
-          more: true,
           yes: false,
+          complete: false,
           lastMessageSent: '3',
           lastDate: new Date(),
         },
       },
     );
-  }
-
-  if (
-    patient.outreach.lastMessageSent === '3' &&
-    patient.outreach.yes === false &&
-    yesMessage === false
-  ) {
-    const response =
-      language === 'english'
-        ? DefaultResponses.two.english()
-        : DefaultResponses.two.spanish();
-
-    await sendMessageMinutesFromNow(3, patient, response[2]);
-  }
-
-  if (yesMessage) {
+  } else if (yesMessage || patient.outreach.lastMessageSent === '3') {
     const response =
       language === 'english'
         ? DefaultResponses.yes.english()
@@ -243,9 +218,9 @@ export const outreachMessage = async (
       { _id: patient._id },
       {
         outreach: {
-          outreach: false, // Because outreach has been completed
-          more: patient.outreach.more,
+          outreach: true,
           yes: true,
+          complete: false,
           lastMessageSent: 'yes',
           lastDate: new Date(),
         },

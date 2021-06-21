@@ -14,12 +14,12 @@ const runCronSchedules = () => {
   });
 
   // Send report every monday at 11 AM. PST.
-  cron.schedule('0 11 * * 1', () => weeklyReport(), {
+  cron.schedule('0 11 * * *', () => weeklyReport(), {
     scheduled: true,
     timezone: 'America/Los_Angeles',
   });
 
-  cron.schedule('0 11 * * *', () => outreachNoResponseSendYES(), {
+  cron.schedule('0 19 * * *', () => outreachNoResponseSendYES(), {
     scheduled: true,
     timezone: 'America/Los_Angeles',
   });

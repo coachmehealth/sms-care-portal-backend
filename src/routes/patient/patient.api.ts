@@ -4,6 +4,7 @@ import { Outcome } from '../../models/outcome.model';
 import { Patient, PatientForPhoneNumber } from '../../models/patient.model';
 import auth from '../../middleware/auth';
 import errorHandler from '../error';
+import { MessageGeneral } from '../../models/messageGeneral.model';
 import { Message } from '../../models/message.model';
 import sendOutreachMessages from '../outreach/sendOutreachMessages';
 
@@ -25,8 +26,7 @@ router.post('/add', auth, async (req, res) => {
 
   if (await PatientForPhoneNumber(req.body.phoneNumber)) {
     return res.status(400).json({
-      msg:
-        'Unable to add patient: patient already exists for given phone number',
+      msg: 'Unable to add patient: patient already exists for given phone number',
     });
   }
 
@@ -93,7 +93,6 @@ router.post('/add', auth, async (req, res) => {
     clinic: req.body.clinic,
     outreach: req.body.outreach,
   });
-
   return newPatient.save().then(() => {
     sendOutreachMessages(req.body.phoneNumber);
     res.status(200).json({
@@ -170,14 +169,23 @@ router.get('/getPatient/:patientID', auth, (req, res) => {
     .catch((err) => errorHandler(res, err.message));
 });
 
-router.get('/getPatientMessages/:patientID', auth, (req, res) => {
+router.get('/getPatientMessages/:patientID', auth, async (req, res) => {
   const id = req.params.patientID;
-  return Message.find({ patientID: new ObjectId(id) })
-    .then((outcomeList) => {
-      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
-      return res.status(200).json(outcomeList);
-    })
-    .catch((err) => errorHandler(res, err.message));
+  const messagesGeneral = await MessageGeneral.find({
+    patientID: new ObjectId(id),
+    sent: true,
+  });
+  const messagesGlucose = await Message.find({
+    patientID: new ObjectId(id),
+    sent: true,
+  });
+
+  const messages = [...messagesGeneral, ...messagesGlucose];
+
+  if (!messages) {
+    return errorHandler(res, 'No outcomes found!');
+  }
+  return res.status(200).json(messages);
 });
 
 router.post('/status', auth, (req, res) => {

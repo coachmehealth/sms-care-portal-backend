@@ -1,10 +1,12 @@
-import schedule from 'node-schedule';
+/* eslint-disable no-console */
 import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
+import { MessageGeneral } from '../models/messageGeneral.model';
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_FROM_NUMBER,
+  TWILIO_FROM_NUMBER_GENERAL,
 } from './config';
 import { Patient } from '../models/patient.model';
 
@@ -17,7 +19,6 @@ const getPatientIdFromNumber = (number: any) => {
   return Patient.findOne({ phoneNumber: number })
     .select('_id')
     .then((patientId) => {
-      // eslint-disable-next-line no-console
       if (!patientId) console.log(`'No patient found for ${number}!'`);
       return patientId;
     })
@@ -27,31 +28,29 @@ const getPatientIdFromNumber = (number: any) => {
 };
 
 // sends message, marks it as sent
-const sendMessage = (msg: IMessage) => {
-  if (msg.message.includes('https://')) {
-    twilio.messages.create({
-      body: '',
-      from: TWILIO_FROM_NUMBER,
-      mediaUrl: [msg.message],
-      to: msg.phoneNumber,
-    });
-  } else {
-    twilio.messages.create({
-      body: msg.message,
-      from: TWILIO_FROM_NUMBER,
-      to: msg.phoneNumber,
-    });
-  }
+const sendMessage = async (msg: IMessage) => {
+  const twilioNumber =
+    msg.sender === 'GLUCOSE BOT'
+      ? TWILIO_FROM_NUMBER
+      : TWILIO_FROM_NUMBER_GENERAL;
 
-  Message.findOneAndUpdate(
+  twilio.messages.create({
+    body: msg.message.includes('https://') ? '' : msg.message,
+    from: twilioNumber,
+    to: msg.phoneNumber,
+    mediaUrl: [msg.message.includes('https://') ? msg.message : ''],
+  });
+
+  await Message.findOneAndUpdate(
     { _id: msg.id },
     {
       sent: true,
     },
-    { new: false },
-    (error) => {
-      // eslint-disable-next-line no-console
-      console.log(error);
+  );
+  await MessageGeneral.findOneAndUpdate(
+    { _id: msg.id },
+    {
+      sent: true,
     },
   );
 
@@ -60,32 +59,33 @@ const sendMessage = (msg: IMessage) => {
     const patientId = new ObjectId(id._id);
     Patient.findByIdAndUpdate(patientId, {
       $inc: { messagesSent: 1 },
-      // eslint-disable-next-line no-console
     }).catch((err) => console.log(err));
   });
 };
 
 // selects all messages which should be sent within the next __ seconds, and schedules them to be sent
-const scheduleMessages = (interval: number) => {
+const scheduleMessages = async (interval: number) => {
   const intervalStart = new Date();
   const intervalEnd = new Date(intervalStart.getTime());
   intervalEnd.setSeconds(intervalEnd.getSeconds() + interval);
+  const messages = await Message.find({
+    date: {
+      $lt: intervalEnd,
+    },
+    sent: false,
+  });
 
-  Message.find(
-    {
-      date: {
-        $lt: intervalEnd,
-      },
-      sent: false,
+  const messagesGeneral = await MessageGeneral.find({
+    date: {
+      $lt: intervalEnd,
     },
-    (err, docs) => {
-      docs.forEach((doc) => {
-        schedule.scheduleJob(doc.date, () => {
-          sendMessage(doc);
-        });
-      });
-    },
-  );
+    sent: false,
+  });
+  const docs = [...messagesGeneral, ...messages];
+
+  docs.forEach((doc: any) => {
+    sendMessage(doc);
+  });
 };
 
 const initializeScheduler = () => {

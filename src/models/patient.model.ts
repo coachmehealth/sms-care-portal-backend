@@ -23,8 +23,8 @@ interface IPatient extends mongoose.Document {
   clinic: string;
   outreach: {
     outreach: boolean;
-    more: boolean;
     yes: boolean;
+    complete: boolean;
     lastMessageSent: string;
     lastDate: Date;
   };
@@ -49,11 +49,11 @@ const PatientSchema = new Schema({
   enabled: { type: Boolean, required: true },
   clinic: { type: String, required: true, default: 'CoachMe' },
   outreach: {
-    outreach: { type: Boolean, required: true },
-    more: { type: Boolean, required: true },
-    yes: { type: Boolean, required: true },
-    lastMessageSent: { type: String, required: true },
-    lastDate: { type: Date, required: true },
+    outreach: { type: Boolean, required: true, default: false },
+    yes: { type: Boolean, required: true, default: false },
+    complete: { type: Boolean, required: true, default: false },
+    lastMessageSent: { type: String, required: true, default: '0' },
+    lastDate: { type: Date, required: true, default: new Date() },
   },
 });
 

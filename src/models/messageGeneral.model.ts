@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-interface IMessage extends mongoose.Document {
+interface IMessageGeneral extends mongoose.Document {
   _id: string;
   phoneNumber: string;
   patientID: number;
-  sender: 'GLUCOSE BOT' | 'PATIENT';
+  sender: 'COACH' | 'PATIENT' | 'OUTREACH';
   message: string;
   image: {
     data: Buffer;
@@ -14,10 +14,10 @@ interface IMessage extends mongoose.Document {
   };
   date: Date;
   sent: Boolean;
-  receivedWith: 'Glucose';
+  receivedWith: 'General';
 }
 
-const MessageSchema = new Schema({
+const MessageGeneralSchema = new Schema({
   patientID: { type: mongoose.Schema.Types.ObjectId, required: true },
   phoneNumber: { type: String, required: true },
   message: { type: String, required: true },
@@ -28,9 +28,12 @@ const MessageSchema = new Schema({
   },
   date: { type: mongoose.Schema.Types.Date, required: true },
   sent: { type: mongoose.Schema.Types.Boolean, default: false },
-  receivedWith: { type: String, required: true, default: 'Glucose' },
+  receivedWith: { type: String, required: true, default: 'General' },
 });
 
-const Message = mongoose.model<IMessage>('Message', MessageSchema);
+const MessageGeneral = mongoose.model<IMessageGeneral>(
+  'MessageGeneral',
+  MessageGeneralSchema,
+);
 
-export { Message, IMessage };
+export { MessageGeneral, IMessageGeneral };
