@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/indent */
+import { ObjectId } from 'mongodb';
 import { Patient, IPatient } from '../../models/patient.model';
 import { MessageGeneral } from '../../models/messageGeneral.model';
 
@@ -92,11 +93,10 @@ const sendMessageMinutesFromNow = async (
 ) => {
   const todayPlusMinutes = new Date();
   todayPlusMinutes.setMinutes(todayPlusMinutes.getMinutes() + minutes);
-
   const newMessage = new MessageGeneral({
     sent: false,
     phoneNumber: patient.phoneNumber,
-    patientID: patient._id,
+    patientID: new ObjectId(patient._id),
     message,
     sender: 'OUTREACH',
     date: todayPlusMinutes,
@@ -123,7 +123,7 @@ export const outreachMessage = async (
   yesMessage: boolean = false,
 ): Promise<string[]> => {
   const language = responseLanguage(patient.language);
-  if (patient.outreach.lastMessageSent === '0' && !patient.outreach.yes) {
+  if (patient.outreach.lastMessageSent === '0' && !yesMessage) {
     const response =
       language === 'english'
         ? DefaultResponses.zero.english(
@@ -136,7 +136,6 @@ export const outreachMessage = async (
             patient.firstName,
             patient.clinic,
           );
-
     await sendMessageMinutesFromNow(1, patient, response[0]);
     await sendMessageMinutesFromNow(2, patient, response[1]);
     await sendMessageMinutesFromNow(3, patient, response[2]);
@@ -154,10 +153,7 @@ export const outreachMessage = async (
         },
       },
     );
-  } else if (
-    patient.outreach.lastMessageSent === '1' &&
-    !patient.outreach.yes
-  ) {
+  } else if (patient.outreach.lastMessageSent === '1' && !yesMessage) {
     const response =
       language === 'english'
         ? DefaultResponses.one.english()
@@ -181,10 +177,7 @@ export const outreachMessage = async (
         },
       },
     );
-  } else if (
-    patient.outreach.lastMessageSent === '2' &&
-    !patient.outreach.yes
-  ) {
+  } else if (patient.outreach.lastMessageSent === '2' && !yesMessage) {
     const response =
       language === 'english'
         ? DefaultResponses.two.english()

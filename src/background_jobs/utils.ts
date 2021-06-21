@@ -319,8 +319,7 @@ export const weeklyReport = async () => {
   }
 };
 
-export const outreachNoResponseSendYES = async () => {
-  console.log('Sending outreach messages to patients that did not respond');
+export const outreachNoResponseSendNextMessage = async () => {
   const patients = await Patient.find({'outreach.outreach': true, 'enabled': true, 'outreach.complete': false, 'outreach.yes': false, });
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);

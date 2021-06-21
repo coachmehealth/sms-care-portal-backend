@@ -12,6 +12,7 @@ import { DATABASE_URI } from '../src/utils/config';
 import { IPatient, Patient } from '../src/models/patient.model';
 import { Message } from '../src/models/message.model';
 import { MessageGeneral } from '../src/models/messageGeneral.model';
+import { Outcome } from '../src/models/outcome.model';
 
 const authApp = express();
 
@@ -82,7 +83,10 @@ export const waitJest = async (waitTime: number) => {
   jest.useFakeTimers();
 };
 
-export const createPatient = async (phoneNumber: string) => {
+export const createPatient = async (
+  phoneNumber: string,
+  outreach: object = {},
+) => {
   const patient = new Patient({
     firstName: 'jest',
     lastName: 'jester',
@@ -95,6 +99,7 @@ export const createPatient = async (phoneNumber: string) => {
     responseCount: 0,
     reports: [],
     enabled: true,
+    outreach,
   });
   await patient.save();
 };
@@ -133,4 +138,31 @@ export const createMessageGeneral = async (
     receivedWith: 'General',
   });
   await newMessageGeneral.save();
+};
+
+export const createOutcome = async (
+  patient: IPatient,
+  date: Date,
+  value: number,
+  alertType: string,
+) => {
+  const newOutcome = new Outcome({
+    patientID: patient._id,
+    phoneNumber: patient.phoneNumber,
+    date,
+    response: `my glucose is ${value}`,
+    value,
+    alertType,
+  });
+  await newOutcome.save();
+};
+
+export const createCoach = async () => {
+  const newCoach = new Coach({
+    firstName: 'jest',
+    lastName: 'test',
+    email: 'jest@test.net',
+    password: '12e81dh2819d',
+  });
+  await newCoach.save();
 };

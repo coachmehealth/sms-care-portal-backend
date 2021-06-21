@@ -81,9 +81,6 @@ if (process.env.NODE_ENV === 'development') {
         scheduled: true,
         timezone: 'America/Los_Angeles',
       });
-      expect(logSpy).toBeCalledWith(
-        'Sending outreach messages to patients that did not respond',
-      );
       expect(cron.schedule).toBeCalledWith('0 19 * * *', expect.any(Function), {
         scheduled: true,
         timezone: 'America/Los_Angeles',

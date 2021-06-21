@@ -91,7 +91,13 @@ router.post('/add', auth, async (req, res) => {
     enabled: req.body.isEnabled,
     prefTime: hours * 60 + mins,
     clinic: req.body.clinic,
-    outreach: req.body.outreach,
+    outreach: {
+      outreach: req.body['outreach[outreach]'],
+      yes: req.body['outreach[yes]'],
+      complete: req.body['outreach[complete]'],
+      lastMessageSent: req.body['outreach[lastMessageSent]'],
+      lastDate: req.body['outreach[lastDate]'],
+    },
   });
   return newPatient.save().then(() => {
     sendOutreachMessages(req.body.phoneNumber);

@@ -1,7 +1,7 @@
 import {
   dailyMidnightMessages,
   weeklyReport,
-  outreachNoResponseSendYES,
+  outreachNoResponseSendNextMessage,
 } from './utils';
 
 const cron = require('node-cron');
@@ -19,7 +19,7 @@ const runCronSchedules = () => {
     timezone: 'America/Los_Angeles',
   });
 
-  cron.schedule('0 19 * * *', () => outreachNoResponseSendYES(), {
+  cron.schedule('0 19 * * *', () => outreachNoResponseSendNextMessage(), {
     scheduled: true,
     timezone: 'America/Los_Angeles',
   });

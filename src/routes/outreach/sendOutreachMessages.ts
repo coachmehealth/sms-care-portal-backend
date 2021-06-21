@@ -3,7 +3,6 @@ import { outreachMessage } from './outreachResponses';
 
 const sendOutreachMessages = async (phoneNumber: string) => {
   const patient = await PatientForPhoneNumber(phoneNumber);
-
   if (
     patient?.outreach.outreach &&
     patient?.enabled &&

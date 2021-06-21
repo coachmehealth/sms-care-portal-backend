@@ -15,11 +15,12 @@ export const parseOutreachMessage = async (
   message: string,
   patient: IPatient,
 ) => {
-  if (message.includes('MORE')) {
-    outreachMessage(patient);
-  }
   if (message.includes('YES')) {
     outreachMessage(patient, true);
+  }
+
+  if (message.includes('MORE')) {
+    outreachMessage(patient);
   }
 };
 
@@ -46,7 +47,7 @@ export const manageIncomingMessages = async (
   if (incoming === 'General') {
     const incomingMessage = new MessageGeneral({
       sent: true,
-      phoneNumber: req.body.From,
+      phoneNumber: fromPhoneNumber,
       patientID: patient._id,
       message: inboundMessage,
       sender: 'PATIENT',
@@ -66,7 +67,7 @@ export const manageIncomingMessages = async (
   if (incoming === 'Glucose') {
     const incomingMessage = new Message({
       sent: true,
-      phoneNumber: req.body.From,
+      phoneNumber: fromPhoneNumber,
       patientID: patient._id,
       message: inboundMessage,
       sender: 'PATIENT',
