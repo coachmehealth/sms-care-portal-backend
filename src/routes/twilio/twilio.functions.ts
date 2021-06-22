@@ -1,4 +1,5 @@
 import twilio from 'twilio';
+import { ObjectId } from 'mongodb';
 import { PatientForPhoneNumber } from '../../models/patient.model';
 import { parseInboundPatientMessage } from '../../domain/message_parsing';
 import { responseForParsedMessage } from '../../domain/glucose_reading_responses';
@@ -7,7 +8,7 @@ import { Message } from '../../models/message.model';
 
 const { MessagingResponse } = twilio.twiml;
 
-const manageIncomingMessages = async (
+export const manageIncomingMessages = async (
   req: any,
   res: any,
   UNRECOGNIZED_PATIENT_RESPONSE: string,
@@ -93,4 +94,30 @@ const manageIncomingMessages = async (
   }
 };
 
-export default manageIncomingMessages;
+export const sendMessage = async (req: any, res: any) => {
+  const recept = req.body.to;
+  const patientID = new ObjectId(req.body.patientID);
+  const date = new Date();
+  const content = req.body.message;
+
+  const outgoingMessage = new Message({
+    sent: false,
+    phoneNumber: recept,
+    patientID,
+    message: content,
+    sender: 'COACH',
+    date,
+    isGeneralNumber: true,
+  });
+
+  outgoingMessage
+    .save()
+    .then(() => {
+      res.status(200).send({
+        success: true,
+        msg: outgoingMessage,
+      });
+    })
+    // eslint-disable-next-line no-console
+    .catch((err) => console.log(err));
+};
