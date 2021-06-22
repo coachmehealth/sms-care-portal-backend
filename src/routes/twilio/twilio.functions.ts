@@ -4,7 +4,6 @@ import { parseInboundPatientMessage } from '../../domain/message_parsing';
 import { responseForParsedMessage } from '../../domain/glucose_reading_responses';
 import { Outcome } from '../../models/outcome.model';
 import { Message } from '../../models/message.model';
-import { MessageGeneral } from '../../models/messageGeneral.model';
 
 const { MessagingResponse } = twilio.twiml;
 
@@ -29,13 +28,14 @@ const manageIncomingMessages = async (
     return;
   }
   if (incoming === 'General') {
-    const incomingMessage = new MessageGeneral({
+    const incomingMessage = new Message({
       sent: true,
       phoneNumber: req.body.From,
       patientID: patient._id,
       message: inboundMessage,
       sender: 'PATIENT',
       date,
+      isGeneralNumber: false,
     });
 
     await incomingMessage.save();
@@ -52,6 +52,7 @@ const manageIncomingMessages = async (
       message: inboundMessage,
       sender: 'PATIENT',
       date,
+      isGeneralNumber: false,
     });
 
     await incomingMessage.save();

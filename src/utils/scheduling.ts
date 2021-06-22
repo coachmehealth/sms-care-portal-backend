@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { ObjectId } from 'mongodb';
 import { Message, IMessage } from '../models/message.model';
-import { MessageGeneral } from '../models/messageGeneral.model';
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
@@ -30,7 +29,7 @@ const getPatientIdFromNumber = (number: any) => {
 // sends message, marks it as sent
 const sendMessage = async (msg: IMessage) => {
   const twilioNumber =
-    msg.sender === 'BOT'
+    msg.sender === 'BOT' && !msg.isGeneralNumber
       ? TWILIO_FROM_NUMBER
       : TWILIO_FROM_NUMBER_GENERAL;
 
@@ -41,12 +40,6 @@ const sendMessage = async (msg: IMessage) => {
   });
 
   await Message.findOneAndUpdate(
-    { _id: msg.id },
-    {
-      sent: true,
-    },
-  );
-  await MessageGeneral.findOneAndUpdate(
     { _id: msg.id },
     {
       sent: true,
@@ -67,20 +60,12 @@ const scheduleMessages = async (interval: number) => {
   const intervalStart = new Date();
   const intervalEnd = new Date(intervalStart.getTime());
   intervalEnd.setSeconds(intervalEnd.getSeconds() + interval);
-  const messages = await Message.find({
+  const docs = await Message.find({
     date: {
       $lt: intervalEnd,
     },
     sent: false,
   });
-
-  const messagesGeneral = await MessageGeneral.find({
-    date: {
-      $lt: intervalEnd,
-    },
-    sent: false,
-  });
-  const docs = [...messagesGeneral, ...messages];
 
   docs.forEach((doc: any) => {
     sendMessage(doc);

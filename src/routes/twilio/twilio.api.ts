@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import bodyParser from 'body-parser';
 import auth from '../../middleware/auth';
 import manageIncomingMessages from './twilio.functions';
-import { MessageGeneral } from '../../models/messageGeneral.model';
+import { Message } from '../../models/message.model';
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -18,13 +18,14 @@ router.post('/sendMessage', auth, (req, res) => {
   const patientID = new ObjectId(req.body.patientID);
   const date = new Date();
 
-  const outgoingMessage = new MessageGeneral({
+  const outgoingMessage = new Message({
     sent: false,
     phoneNumber: recept,
     patientID,
     message: content,
     sender: 'COACH',
     date,
+    isGeneralNumber: true,
   });
 
   outgoingMessage

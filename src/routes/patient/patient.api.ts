@@ -4,7 +4,6 @@ import { Outcome } from '../../models/outcome.model';
 import { Patient, PatientForPhoneNumber } from '../../models/patient.model';
 import auth from '../../middleware/auth';
 import errorHandler from '../error';
-import { MessageGeneral } from '../../models/messageGeneral.model';
 import { Message } from '../../models/message.model';
 
 const { ObjectId } = require('mongoose').Types;
@@ -167,16 +166,10 @@ router.get('/getPatient/:patientID', auth, (req, res) => {
 
 router.get('/getPatientMessages/:patientID', auth, async (req, res) => {
   const id = req.params.patientID;
-  const messagesGeneral = await MessageGeneral.find({
+  const messages = await Message.find({
     patientID: new ObjectId(id),
     sent: true,
   });
-  const messagesGlucose = await Message.find({
-    patientID: new ObjectId(id),
-    sent: true,
-  });
-
-  const messages = [...messagesGeneral, ...messagesGlucose];
 
   if (!messages) {
     return errorHandler(res, 'No outcomes found!');
