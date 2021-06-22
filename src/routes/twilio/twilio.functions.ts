@@ -36,7 +36,7 @@ export const manageIncomingMessages = async (
       message: inboundMessage,
       sender: 'PATIENT',
       date,
-      isGeneralNumber: false,
+      isGeneralNumber: true,
     });
 
     await incomingMessage.save();
