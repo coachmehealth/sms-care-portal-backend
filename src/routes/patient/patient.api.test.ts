@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'development') {
       const patient = await Patient.findOne({});
       if (patient) {
         await createMessage(patient, 'My glucose is 96', true, 'PATIENT');
-        await createMessage(patient, 'bot unsentmessage', false, 'GLUCOSE BOT');
+        await createMessage(patient, 'bot unsentmessage', false, 'BOT');
         await createMessageGeneral(patient, 'You are well!', true, 'COACH');
         await createMessageGeneral(patient, 'Unsent message', false, 'COACH');
       }

@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'development') {
         phoneNumber: patientPhone,
         patientID: '60aebf123fbd20eba237244e',
         message: 'Test scheduled message',
-        sender: 'GLUCOSE BOT',
+        sender: 'BOT',
         date: today,
         sent: false,
       });

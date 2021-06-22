@@ -81,7 +81,7 @@ const manageIncomingMessages = async (
       phoneNumber: fromPhoneNumber,
       patientID: patient._id, // lost on this
       message: responseMessage,
-      sender: 'GLUCOSE BOT',
+      sender: 'BOT',
       date,
     });
 

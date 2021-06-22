@@ -103,7 +103,7 @@ export const createMessage = async (
   patient: IPatient,
   message: string,
   sent: boolean,
-  sender: 'GLUCOSE BOT' | 'PATIENT',
+  sender: 'BOT' | 'PATIENT',
 ) => {
   const newMessage = new Message({
     phoneNumber: patient.phoneNumber,
