@@ -41,7 +41,6 @@ if (process.env.NODE_ENV === 'development') {
       const message = await Message.findOne();
       expect(message?.sender).toBe('COACH');
       expect(message?.isGeneralNumber).toBe(true);
-
     });
 
     it('receive route saves incoming message from a known patient to Message database with General number', async () => {
