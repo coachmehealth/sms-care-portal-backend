@@ -5,7 +5,6 @@ import { parseInboundPatientMessage } from '../../domain/message_parsing';
 import { responseForParsedMessage } from '../../domain/glucose_reading_responses';
 import { Outcome } from '../../models/outcome.model';
 import { Message } from '../../models/message.model';
-import { MessageGeneral } from '../../models/messageGeneral.model';
 
 const { MessagingResponse } = twilio.twiml;
 
@@ -30,19 +29,20 @@ export const manageIncomingMessages = async (
     return;
   }
   if (incoming === 'General') {
-    const incomingMessage = new MessageGeneral({
+    const incomingMessage = new Message({
       sent: true,
       phoneNumber: req.body.From,
       patientID: patient._id,
       message: inboundMessage,
       sender: 'PATIENT',
       date,
+      isGeneralNumber: true,
     });
 
     await incomingMessage.save();
 
     res.writeHead(200, { 'Content-Type': 'text/xml' });
-    res.end();
+    res.end(incomingMessage.sent.toString());
   }
 
   if (incoming === 'Glucose') {
@@ -53,6 +53,7 @@ export const manageIncomingMessages = async (
       message: inboundMessage,
       sender: 'PATIENT',
       date,
+      isGeneralNumber: false,
     });
 
     await incomingMessage.save();
@@ -82,7 +83,7 @@ export const manageIncomingMessages = async (
       phoneNumber: fromPhoneNumber,
       patientID: patient._id, // lost on this
       message: responseMessage,
-      sender: 'GLUCOSE BOT',
+      sender: 'BOT',
       date,
     });
 
@@ -94,19 +95,20 @@ export const manageIncomingMessages = async (
 };
 
 export const sendMessage = async (req: any, res: any) => {
-  const content = req.body.message;
   const recept = req.body.to;
   const patientID = new ObjectId(req.body.patientID);
+  const content = req.body.message;
   const scheduled = req.body.scheduled || '';
   const date = !scheduled ? new Date() : new Date(scheduled);
 
-  const outgoingMessage = new MessageGeneral({
+  const outgoingMessage = new Message({
     sent: false,
     phoneNumber: recept,
     patientID,
     message: content,
     sender: 'COACH',
     date,
+    isGeneralNumber: true,
   });
 
   outgoingMessage

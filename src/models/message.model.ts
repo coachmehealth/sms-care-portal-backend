@@ -6,7 +6,7 @@ interface IMessage extends mongoose.Document {
   _id: string;
   phoneNumber: string;
   patientID: number;
-  sender: 'GLUCOSE BOT' | 'PATIENT';
+  sender: string;
   message: string;
   image: {
     data: Buffer;
@@ -14,7 +14,7 @@ interface IMessage extends mongoose.Document {
   };
   date: Date;
   sent: Boolean;
-  receivedWith: 'Glucose';
+  isGeneralNumber: Boolean;
 }
 
 const MessageSchema = new Schema({
@@ -28,7 +28,7 @@ const MessageSchema = new Schema({
   },
   date: { type: mongoose.Schema.Types.Date, required: true },
   sent: { type: mongoose.Schema.Types.Boolean, default: false },
-  receivedWith: { type: String, required: true, default: 'Glucose' },
+  isGeneralNumber: { type: Boolean, required: true, default: false },
 });
 
 const Message = mongoose.model<IMessage>('Message', MessageSchema);

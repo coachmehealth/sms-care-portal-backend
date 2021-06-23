@@ -11,7 +11,6 @@ import authRouter from '../src/routes/coach.auth';
 import { DATABASE_URI } from '../src/utils/config';
 import { IPatient, Patient } from '../src/models/patient.model';
 import { Message } from '../src/models/message.model';
-import { MessageGeneral } from '../src/models/messageGeneral.model';
 
 const authApp = express();
 
@@ -103,7 +102,7 @@ export const createMessage = async (
   patient: IPatient,
   message: string,
   sent: boolean,
-  sender: 'GLUCOSE BOT' | 'PATIENT',
+  sender: 'BOT' | 'PATIENT',
 ) => {
   const newMessage = new Message({
     phoneNumber: patient.phoneNumber,
@@ -115,22 +114,4 @@ export const createMessage = async (
     receivedWith: 'Glucose',
   });
   await newMessage.save();
-};
-
-export const createMessageGeneral = async (
-  patient: IPatient,
-  message: string,
-  sent: boolean,
-  sender: 'COACH' | 'PATIENT',
-) => {
-  const newMessageGeneral = new MessageGeneral({
-    phoneNumber: patient.phoneNumber,
-    patientID: patient._id,
-    sender,
-    message,
-    date: new Date(),
-    sent,
-    receivedWith: 'General',
-  });
-  await newMessageGeneral.save();
 };

@@ -37,7 +37,7 @@ export const dailyMidnightMessages = () => {
               phoneNumber: patient.phoneNumber,
               date: new Date(),
               message,
-              sender: 'GLUCOSE BOT',
+              sender: 'BOT',
               sent: false,
             });
             await newMessage.save();
@@ -291,7 +291,7 @@ const sendOutcomesToPatients = async () => {
         phoneNumber: patient.phoneNumber,
         date: new Date(),
         message,
-        sender: 'GLUCOSE BOT',
+        sender: 'BOT',
         sent: false,
       });
       newMessage.save();
