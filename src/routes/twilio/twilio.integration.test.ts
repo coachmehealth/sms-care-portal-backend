@@ -11,7 +11,6 @@ import twilioRouter from './twilio.api';
 import { Patient } from '../../models/patient.model';
 import { Message } from '../../models/message.model';
 import { Outcome } from '../../models/outcome.model';
-import { Patient } from '../../models/patient.model';
 
 const twilioApp = express();
 
@@ -105,11 +104,10 @@ if (process.env.NODE_ENV === 'development') {
         });
       expect(res.statusCode).toBe(200);
       const messages = await Message.find();
-      const messagesGeneral = await MessageGeneral.find();
-      expect(messages.length).toBe(0);
-      expect(messagesGeneral.length).toBe(1);
+      expect(messages[0]?.isGeneralNumber).toBe(true);
+      expect(messages[0]?.sender).toBe('PATIENT');
       expect(
-        messagesGeneral[0].date > new Date('Thu Feb 01 2221 00:00:00'),
+        messages[0]?.date > new Date('Thu Feb 01 2221 00:00:00'),
       ).toBeTruthy();
     });
 
@@ -131,9 +129,11 @@ if (process.env.NODE_ENV === 'development') {
         });
       expect(res.statusCode).toBe(200);
       const messages = await Message.find();
-      const messagesGeneral = await MessageGeneral.find();
-      expect(messages.length).toBe(0);
-      expect(messagesGeneral.length).toBe(1);
+      expect(messages[0]?.isGeneralNumber).toBe(true);
+      expect(messages[0]?.sender).toBe('PATIENT');
+      expect(
+        messages[0]?.date < new Date('Thu Feb 01 2221 00:00:00'),
+      ).toBeTruthy();
     });
   });
 } else {
