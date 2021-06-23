@@ -169,6 +169,7 @@ router.get('/getPatientMessages/:patientID', auth, async (req, res) => {
   const messages = await Message.find({
     patientID: new ObjectId(id),
     sent: true,
+    isGeneralNumber: true,
   });
 
   if (!messages) {

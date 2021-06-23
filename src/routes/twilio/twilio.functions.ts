@@ -42,7 +42,7 @@ export const manageIncomingMessages = async (
     await incomingMessage.save();
 
     res.writeHead(200, { 'Content-Type': 'text/xml' });
-    res.end();
+    res.end(incomingMessage.sent.toString());
   }
 
   if (incoming === 'Glucose') {
