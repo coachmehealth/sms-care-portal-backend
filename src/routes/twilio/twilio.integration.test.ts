@@ -99,13 +99,13 @@ if (process.env.NODE_ENV === 'development') {
           patientID: patient?._id,
           scheduled: 'Fri Jun 04 2221 14:14:51',
           phoneNumber: '12312038',
-          sender: 'BOT',
+          sender: 'COACH',
           sent: false,
         });
       expect(res.statusCode).toBe(200);
       const messages = await Message.find();
       expect(messages[0]?.isGeneralNumber).toBe(true);
-      expect(messages[0]?.sender).toBe('PATIENT');
+      expect(messages[0]?.sender).toBe('COACH');
       expect(
         messages[0]?.date > new Date('Thu Feb 01 2221 00:00:00'),
       ).toBeTruthy();
@@ -124,13 +124,13 @@ if (process.env.NODE_ENV === 'development') {
           patientID: patient?._id,
           scheduled: '',
           phoneNumber: '12312038',
-          sender: 'BOT',
+          sender: 'COACH',
           sent: false,
         });
       expect(res.statusCode).toBe(200);
       const messages = await Message.find();
       expect(messages[0]?.isGeneralNumber).toBe(true);
-      expect(messages[0]?.sender).toBe('PATIENT');
+      expect(messages[0]?.sender).toBe('COACH');
       expect(
         messages[0]?.date < new Date('Thu Feb 01 2221 00:00:00'),
       ).toBeTruthy();
