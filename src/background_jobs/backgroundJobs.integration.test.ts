@@ -1,4 +1,3 @@
-/* eslint global-require: 0 */
 import {
   connectDatabase,
   closeDatabase,
@@ -92,17 +91,11 @@ if (process.env.NODE_ENV === 'development') {
       await createPatient('111');
       const patient = await Patient.findOne({});
       if (patient) {
-        // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(1), 97, 'green');
-        // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(0), 77, '<80');
-        // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(-1), 99, 'green');
-        // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(-.6), 111, 'green');
-        // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(-2), 121, 'green');
-        // eslint-disable-next-line prettier/prettier
         await createOutcome(patient, getDateRelativeToMonday(-5), 150, 'yellow');
       }
 
