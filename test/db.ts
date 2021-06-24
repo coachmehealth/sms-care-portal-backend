@@ -104,14 +104,15 @@ export const createMessage = async (
   patient: IPatient,
   message: string,
   sent: boolean,
-  sender: 'BOT' | 'PATIENT',
+  sender: string,
+  date: Date = new Date(),
 ) => {
   const newMessage = new Message({
     phoneNumber: patient.phoneNumber,
     patientID: patient._id,
     sender,
     message,
-    date: new Date(),
+    date,
     sent,
     receivedWith: 'Glucose',
   });
