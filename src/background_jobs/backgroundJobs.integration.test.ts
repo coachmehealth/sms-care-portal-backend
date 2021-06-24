@@ -1,18 +1,18 @@
 /* eslint global-require: 0 */
-import { ObjectId } from 'mongodb';
 import {
   connectDatabase,
   closeDatabase,
   clearDatabase,
   waitJest,
+  createPatient,
+  createOutcome,
+  createMessageTemplate,
 } from '../../test/db';
 import runCronSchedules from './cronSchedules';
-import { IPatient, Patient } from '../models/patient.model';
-import { MessageTemplate } from '../models/messageTemplate.model';
+import { Patient } from '../models/patient.model';
 import { Message } from '../models/message.model';
 import { dailyMidnightMessages, weeklyReport } from './utils';
 import { Schedule } from '../models/schedule.model';
-import { Outcome } from '../models/outcome.model';
 
 const cron = require('node-cron');
 
@@ -26,49 +26,6 @@ if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
   beforeEach(async () => clearDatabase());
   afterAll(() => closeDatabase());
-
-  const createPatient = async () => {
-    const patient = new Patient({
-      firstName: 'jest',
-      lastName: 'jester',
-      coachID: new ObjectId(1),
-      coachName: 'jest coach',
-      language: 'english',
-      phoneNumber: '111',
-      prefTime: 12.2,
-      messagesSent: 0,
-      responseCount: 0,
-      reports: [],
-      enabled: true,
-    });
-    await patient.save();
-  };
-
-  const createOutcome = async (
-    patient: IPatient,
-    date: Date,
-    value: number,
-    alertType: string,
-  ) => {
-    const newOutcome = new Outcome({
-      patientID: patient._id,
-      phoneNumber: patient.phoneNumber,
-      date,
-      response: `my glucose is ${value}`,
-      value,
-      alertType,
-    });
-    await newOutcome.save();
-  };
-
-  const createMessageTemplate = async () => {
-    const newMessageTemplate = new MessageTemplate({
-      text: 'Health is fun!',
-      language: 'english',
-      type: 'Initial',
-    });
-    await newMessageTemplate.save();
-  };
 
   const getDateRelativeToMonday = (offset: number) => {
     const lastMonday = new Date();
@@ -102,7 +59,7 @@ if (process.env.NODE_ENV === 'development') {
     });
 
     it('sends midnight messages', async (done) => {
-      await createPatient();
+      await createPatient('111');
       await createMessageTemplate();
       dailyMidnightMessages();
       await waitJest(400);
@@ -132,7 +89,7 @@ if (process.env.NODE_ENV === 'development') {
     it('weekly reports run if it has not run this week', async (done) => {
       const lastSunday = getDateRelativeToMonday(-1);
       await new Schedule({ weeklyReport: lastSunday }).save();
-      await createPatient();
+      await createPatient('111');
       const patient = await Patient.findOne({});
       if (patient) {
         // eslint-disable-next-line prettier/prettier

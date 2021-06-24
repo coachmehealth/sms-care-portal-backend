@@ -5,9 +5,14 @@ import request from 'supertest';
 import express from 'express';
 import { hash } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { ObjectId } from 'mongodb';
 import { Coach } from '../src/models/coach.model';
 import authRouter from '../src/routes/coach.auth';
 import { DATABASE_URI } from '../src/utils/config';
+import { IPatient, Patient } from '../src/models/patient.model';
+import { Message } from '../src/models/message.model';
+import { Outcome } from '../src/models/outcome.model';
+import { MessageTemplate } from '../src/models/messageTemplate.model';
 
 const authApp = express();
 
@@ -76,4 +81,65 @@ export const waitJest = async (waitTime: number) => {
   // eslint-disable-next-line @typescript-eslint/no-implied-eval
   await new Promise((resolve) => setTimeout(resolve, waitTime));
   jest.useFakeTimers();
+};
+
+export const createPatient = async (phoneNumber: string) => {
+  const patient = new Patient({
+    firstName: 'jest',
+    lastName: 'jester',
+    coachID: new ObjectId(1),
+    coachName: 'jest coach',
+    language: 'english',
+    phoneNumber,
+    prefTime: 12.2,
+    messagesSent: 0,
+    responseCount: 0,
+    reports: [],
+    enabled: true,
+  });
+  await patient.save();
+};
+
+export const createMessage = async (
+  patient: IPatient,
+  message: string,
+  sent: boolean,
+  sender: 'BOT' | 'PATIENT',
+) => {
+  const newMessage = new Message({
+    phoneNumber: patient.phoneNumber,
+    patientID: patient._id,
+    sender,
+    message,
+    date: new Date(),
+    sent,
+    receivedWith: 'Glucose',
+  });
+  await newMessage.save();
+};
+
+export const createOutcome = async (
+  patient: IPatient,
+  date: Date,
+  value: number,
+  alertType: string,
+) => {
+  const newOutcome = new Outcome({
+    patientID: patient._id,
+    phoneNumber: patient.phoneNumber,
+    date,
+    response: `my glucose is ${value}`,
+    value,
+    alertType,
+  });
+  await newOutcome.save();
+};
+
+export const createMessageTemplate = async () => {
+  const newMessageTemplate = new MessageTemplate({
+    text: 'Health is fun!',
+    language: 'english',
+    type: 'Initial',
+  });
+  await newMessageTemplate.save();
 };
