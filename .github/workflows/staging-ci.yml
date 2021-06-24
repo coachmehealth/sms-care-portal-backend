@@ -39,5 +39,5 @@ jobs:
     - name: Deploy to staging
       if: github.ref == 'refs/heads/staging' && job.status == 'success'
       run: |
-        git remote add aptible ${{ APTIBLE_STAGING_GIT_URL composed of API_KEY_AND_APP_NAME }}
+        git remote add aptible https://aptible:${{ secrets.APTIBLE_API_TOKEN }}@git.aptible.com/${{ secrets.APTIBLE_APP_NAME }}.git
         git push aptible HEAD:master -f
