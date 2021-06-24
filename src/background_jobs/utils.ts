@@ -79,22 +79,11 @@ export const getDayBody = (
   body: string,
   day: string,
   value: number,
-  language: string,
 ) => {
-  if (language === 'english') {
-    if (value > 0) {
-      const newbody = `${body}  ${returnColorRanges(value)} ${day}: ${value}\n`;
-      return newbody;
-    }
+  if (value > 0) {
+    const newbody = `${body}  ${returnColorRanges(value)} ${day}: ${value}\n`;
+    return newbody;
   }
-
-  if (language === 'spanish') {
-    if (value > 0) {
-      const newbody = `${body}  ${returnColorRanges(value)} ${day}: ${value}\n`;
-      return newbody;
-    }
-  }
-
   return body;
 };
 
@@ -109,24 +98,24 @@ export const getWeeklyList = (
     const averageColor = returnColorRanges(weekAverage);
     if (language === 'english') {
       body += `${averageColor} Average: ${weekAverage} mg/dL\n\n`;
-      body = getDayBody(body, 'Mon', weekRecords.monday, 'english');
-      body = getDayBody(body, 'Tues', weekRecords.tuesday, 'english');
-      body = getDayBody(body, 'Wed', weekRecords.wednesday, 'english');
-      body = getDayBody(body, 'Thurs', weekRecords.thursday, 'english');
-      body = getDayBody(body, 'Fri', weekRecords.friday, 'english');
-      body = getDayBody(body, 'Sat', weekRecords.saturday, 'english');
-      body = getDayBody(body, 'Sun', weekRecords.sunday, 'english');
+      body = getDayBody(body, 'Mon', weekRecords.monday);
+      body = getDayBody(body, 'Tues', weekRecords.tuesday);
+      body = getDayBody(body, 'Wed', weekRecords.wednesday);
+      body = getDayBody(body, 'Thurs', weekRecords.thursday);
+      body = getDayBody(body, 'Fri', weekRecords.friday);
+      body = getDayBody(body, 'Sat', weekRecords.saturday);
+      body = getDayBody(body, 'Sun', weekRecords.sunday);
     }
 
     if (language === 'spanish') {
       body += `${averageColor} Promedio: ${weekAverage} mg/dL\n\n`;
-      body = getDayBody(body, 'Mon', weekRecords.monday, 'spanish');
-      body = getDayBody(body, 'Tues', weekRecords.tuesday, 'spanish');
-      body = getDayBody(body, 'Wed', weekRecords.wednesday, 'spanish');
-      body = getDayBody(body, 'Thurs', weekRecords.thursday, 'spanish');
-      body = getDayBody(body, 'Fri', weekRecords.friday, 'spanish');
-      body = getDayBody(body, 'Sat', weekRecords.saturday, 'spanish');
-      body = getDayBody(body, 'Sun', weekRecords.sunday, 'spanish');
+      body = getDayBody(body, 'Lun', weekRecords.monday);
+      body = getDayBody(body, 'Mar', weekRecords.tuesday);
+      body = getDayBody(body, 'Mie', weekRecords.wednesday);
+      body = getDayBody(body, 'Jue', weekRecords.thursday);
+      body = getDayBody(body, 'Vie', weekRecords.friday);
+      body = getDayBody(body, 'Sab', weekRecords.saturday);
+      body = getDayBody(body, 'Dom', weekRecords.sunday);
     }
   }
   return body;
