@@ -40,16 +40,11 @@ describe('Message utils', () => {
     expect(getWeeklyList(5, 110, { monday: 4 }, 'spanish')).toContain(
       'Promedio',
     );
-    expect(getWeeklyList(5, 110, { monday: 4 }, 'spanish')).toContain(
-      'Lun',
-    );
-    console.log(getWeeklyList(5, 110, { monday: 4 }, 'spanish'));
+    expect(getWeeklyList(5, 110, { monday: 4 }, 'spanish')).toContain('Lun');
     expect(getWeeklyList(5, 110, { monday: 4 }, 'english')).toContain(
       'Average',
     );
-    expect(getWeeklyList(5, 110, { monday: 4 }, 'english')).toContain(
-      'Mon',
-    );
+    expect(getWeeklyList(5, 110, { monday: 4 }, 'english')).toContain('Mon');
   });
 
   it('getMessageTemplate() Returns the proper language', () => {
