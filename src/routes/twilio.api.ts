@@ -55,7 +55,6 @@ router.post('/sendMessage', auth, (req, res) => {
         msg: outgoingMessage,
       });
     })
-    // eslint-disable-next-line no-console
     .catch((err) => console.log(err));
 });
 

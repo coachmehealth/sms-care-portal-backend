@@ -6,7 +6,6 @@ import { Message } from '../../models/message.model';
 import { Outcome } from '../../models/outcome.model';
 import { Patient } from '../../models/patient.model';
 import runCronSchedules from '../../background_jobs/cronSchedules';
-
 import initializeScheduler from '../../utils/scheduling';
 import errorHandler from '../error';
 
