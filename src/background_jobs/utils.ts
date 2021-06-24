@@ -258,22 +258,15 @@ export const getWeekMessage = (
 ) => {
   const [weekAverage, recordedCount, greenCount] =
     getAverageAndCounts(weekRecords);
-  const message =
-    patient.language.toLowerCase() === 'english'
-      ? getMessageTemplate(
-        greenCount,
-        recordedCount,
-        weekAverage,
-        weekRecords,
-        'english',
-      )
-      : getMessageTemplate(
-        greenCount,
-        recordedCount,
-        weekAverage,
-        weekRecords,
-        'spanish',
-      );
+  
+  const language = patient.language.toLowerCase() === 'english' ? 'english' : 'spanish';
+  const message = getMessageTemplate(
+    greenCount,
+    recordedCount,
+    weekAverage,
+    weekRecords,
+    language,
+  );
 
   return message;
 };
