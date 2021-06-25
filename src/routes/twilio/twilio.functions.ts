@@ -86,8 +86,9 @@ export const manageIncomingMessages = async (
 export const sendMessage = async (req: any, res: any) => {
   const recept = req.body.to;
   const patientID = new ObjectId(req.body.patientID);
-  const date = new Date();
   const content = req.body.message;
+  const scheduled = req.body.scheduled || '';
+  const date = !scheduled ? new Date() : new Date(scheduled);
 
   const outgoingMessage = new Message({
     sent: false,

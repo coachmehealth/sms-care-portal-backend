@@ -84,6 +84,58 @@ if (process.env.NODE_ENV === 'development') {
       expect(outcome[0].phoneNumber).toBe('1114446668');
     });
   });
+
+  describe('User Model Test', () => {
+    it('Send an scheduled message', async () => {
+      await createPatient('1112223337');
+      const patient = await Patient.findOne({ phoneNumber: '1112223337' });
+      const res = await request(twilioApp)
+        .post('/sendMessage')
+        .set('Authorization', `Bearer ${tokenObject.token[0]}`)
+        .type('form')
+        .send({
+          message: 'jest message',
+          to: '1112223337',
+          patientID: patient?._id,
+          scheduled: 'Fri Jun 04 2221 14:14:51',
+          phoneNumber: '12312038',
+          sender: 'COACH',
+          sent: false,
+        });
+      expect(res.statusCode).toBe(200);
+      const messages = await Message.find();
+      expect(messages[0]?.isGeneralNumber).toBe(true);
+      expect(messages[0]?.sender).toBe('COACH');
+      expect(
+        messages[0]?.date > new Date('Thu Feb 01 2221 00:00:00'),
+      ).toBeTruthy();
+    });
+
+    it('Send an unscheduled message', async () => {
+      await createPatient('1112223337');
+      const patient = await Patient.findOne({ phoneNumber: '1112223337' });
+      const res = await request(twilioApp)
+        .post('/sendMessage')
+        .set('Authorization', `Bearer ${tokenObject.token[0]}`)
+        .type('form')
+        .send({
+          message: 'jest message',
+          to: '1112223337',
+          patientID: patient?._id,
+          scheduled: '',
+          phoneNumber: '12312038',
+          sender: 'COACH',
+          sent: false,
+        });
+      expect(res.statusCode).toBe(200);
+      const messages = await Message.find();
+      expect(messages[0]?.isGeneralNumber).toBe(true);
+      expect(messages[0]?.sender).toBe('COACH');
+      expect(
+        messages[0]?.date < new Date('Thu Feb 01 2221 00:00:00'),
+      ).toBeTruthy();
+    });
+  });
 } else {
   it('is not development', () => {
     expect(1).toBeTruthy();
