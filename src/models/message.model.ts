@@ -14,6 +14,7 @@ interface IMessage extends mongoose.Document {
   };
   date: Date;
   sent: Boolean;
+  isGeneralNumber: Boolean;
 }
 
 const MessageSchema = new Schema({
@@ -27,6 +28,7 @@ const MessageSchema = new Schema({
   },
   date: { type: mongoose.Schema.Types.Date, required: true },
   sent: { type: mongoose.Schema.Types.Boolean, default: false },
+  isGeneralNumber: { type: Boolean, required: true, default: false },
 });
 
 const Message = mongoose.model<IMessage>('Message', MessageSchema);

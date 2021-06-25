@@ -18,6 +18,7 @@ jobs:
       TWILIO_ACCOUNT_SID: AC-some_fake_string
       TWILIO_AUTH_TOKEN: some_fake_string
       TWILIO_FROM_NUMBER: 1112223333
+      TWILIO_FROM_NUMBER_GENERAL: 1112223334
       JWT_SECRET: 6Ngm5GMM1OcZ8JZW
 
     steps:

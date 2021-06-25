@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'development') {
 
   describe('Scheduling tests', () => {
     jest.useFakeTimers();
-    it('sends scheduled messages', async (done) => {
+    it('sends scheduled messages', async () => {
       await createPatient(patientPhone);
       const patient = await Patient.findOne();
       if (patient) {
@@ -27,10 +27,9 @@ if (process.env.NODE_ENV === 'development') {
       const msgbefore = await Message.findOne({ phoneNumber: patientPhone });
       expect(msgbefore?.sent).toBeFalsy();
       initializeScheduler();
-      await waitJest(100);
+      await waitJest(300);
       const msgafter = await Message.findOne({ phoneNumber: patientPhone });
       expect(msgafter?.sent).toBeTruthy();
-      done();
     });
   });
 } else {

@@ -6,10 +6,10 @@ import socket from 'socket.io';
 import connectToDatabase from './utils/mongo';
 import './utils/config';
 
-import patientRouter from './routes/patient.api';
+import patientRouter from './routes/patient/patient.api';
 import messageRouter from './routes/messages/messages.api';
 import coachRouter from './routes/coach.auth';
-import twilioRouter from './routes/twilio.api';
+import twilioRouter from './routes/twilio/twilio.api';
 import messageTemplateRouter from './routes/messageTemplate.api';
 import RequireHttps from './middleware/require_https';
 

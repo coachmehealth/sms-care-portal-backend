@@ -92,8 +92,6 @@ export const responseForParsedMessage = async (
     type: capitalize(classification),
   });
 
-  console.log('Got message templates from DB = ', templates);
-
   const randomTemplate = sample(templates);
 
   if (!randomTemplate) {
