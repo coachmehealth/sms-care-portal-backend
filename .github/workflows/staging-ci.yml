@@ -8,7 +8,7 @@ on:
   push:
     branches: [ staging ]
   pull_request:
-    branches: [staging]
+    branches: [ staging ]
 
 jobs:
   build:
@@ -36,8 +36,13 @@ jobs:
       run: npx eslint .
     - name: Run Unit Tests
       run: yarn test
-    - name: Deploy to staging
-      if: github.ref == 'refs/heads/staging' && job.status == 'success'
-      run: |
-        git remote add aptible https://aptible:${{ secrets.APTIBLE_API_TOKEN }}@git.aptible.com/${{ secrets.APTIBLE_APP_NAME }}.git
-        git push aptible HEAD:master -f
+    - name: Deploy to Staging
+      uses: easingthemes/ssh-deploy@main
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-rltgoDzvO --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}
+          EXCLUDE: "/dist/, /node_modules/"
