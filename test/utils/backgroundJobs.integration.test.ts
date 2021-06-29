@@ -6,12 +6,15 @@ import {
   createPatient,
   createOutcome,
   createMessageTemplate,
-} from '../../test/db';
-import runCronSchedules from './cronSchedules';
-import { Patient } from '../models/patient.model';
-import { Message } from '../models/message.model';
-import { dailyMidnightMessages, weeklyReport } from './utils';
-import { Schedule } from '../models/schedule.model';
+} from '../db';
+import runCronSchedules from '../../src/background_jobs/cronSchedules';
+import { Patient } from '../../src/models/patient.model';
+import { Message } from '../../src/models/message.model';
+import {
+  dailyMidnightMessages,
+  weeklyReport,
+} from '../../src/background_jobs/utils';
+import { Schedule } from '../../src/models/schedule.model';
 
 const cron = require('node-cron');
 
@@ -94,9 +97,19 @@ if (process.env.NODE_ENV === 'development') {
         await createOutcome(patient, getDateRelativeToMonday(1), 97, 'green');
         await createOutcome(patient, getDateRelativeToMonday(0), 77, '<80');
         await createOutcome(patient, getDateRelativeToMonday(-1), 99, 'green');
-        await createOutcome(patient, getDateRelativeToMonday(-.6), 111, 'green');
+        await createOutcome(
+          patient,
+          getDateRelativeToMonday(-0.6),
+          111,
+          'green',
+        );
         await createOutcome(patient, getDateRelativeToMonday(-2), 121, 'green');
-        await createOutcome(patient, getDateRelativeToMonday(-5), 150, 'yellow');
+        await createOutcome(
+          patient,
+          getDateRelativeToMonday(-5),
+          150,
+          'yellow',
+        );
       }
 
       weeklyReport();

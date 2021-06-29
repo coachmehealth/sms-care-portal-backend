@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-/* eslint-disable prettier/prettier */
 import { ObjectId } from 'mongodb';
 import { Message } from '../models/message.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
@@ -19,8 +18,7 @@ export const dailyMidnightMessages = async () => {
     if (patient.enabled) {
       const messages = MessageTemplates.filter(
         (template) =>
-          template.language.toLowerCase() ===
-                patient.language.toLowerCase(),
+          template.language.toLowerCase() === patient.language.toLowerCase(),
       );
       if (messages.length < 1) {
         console.log(
@@ -71,11 +69,7 @@ export const returnColorRanges = (value: number) => {
   return String.fromCodePoint(128994);
 };
 
-export const getDayBody = (
-  body: string,
-  day: string,
-  value: number,
-) => {
+export const getDayBody = (body: string, day: string, value: number) => {
   if (value > 0) {
     const newbody = `${body}  ${returnColorRanges(value)} ${day}: ${value}\n`;
     return newbody;
@@ -243,8 +237,9 @@ export const getWeekMessage = (
 ) => {
   const [weekAverage, recordedCount, greenCount] =
     getAverageAndCounts(weekRecords);
-  
-  const language = patient.language.toLowerCase() === 'english' ? 'english' : 'spanish';
+
+  const language =
+    patient.language.toLowerCase() === 'english' ? 'english' : 'spanish';
   const message = getMessageTemplate(
     greenCount,
     recordedCount,
@@ -287,7 +282,8 @@ export const weeklyReport = async () => {
     weeklyReport();
   }
   if (schedules) {
-    const dateDifference = lastMonday.getDate() - schedules.weeklyReport.getDate();
+    const dateDifference =
+      lastMonday.getDate() - schedules.weeklyReport.getDate();
     if (dateDifference > 0) {
       await Schedule.findOneAndUpdate({}, { weeklyReport: new Date() });
       sendOutcomesToPatients();
