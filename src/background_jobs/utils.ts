@@ -11,40 +11,36 @@ interface IweekRecords {
   [char: string]: number;
 }
 
-export const dailyMidnightMessages = () => {
+export const dailyMidnightMessages = async () => {
   console.log('Running batch of scheduled messages');
-  Patient.find().then((patients) => {
-    MessageTemplate.find({ type: 'Initial' })
-      .then((MessageTemplates) => {
-        patients.forEach(async (patient) => {
-          if (patient.enabled) {
-            const messages = MessageTemplates.filter(
-              (template) =>
-                template.language.toLowerCase() ===
+  const patients = await Patient.find();
+  const MessageTemplates = await MessageTemplate.find({ type: 'Initial' });
+  patients.forEach(async (patient) => {
+    if (patient.enabled) {
+      const messages = MessageTemplates.filter(
+        (template) =>
+          template.language.toLowerCase() ===
                 patient.language.toLowerCase(),
-            );
-            if (messages.length < 1) {
-              console.log(
-                'Unable to find message appropriate for member = ',
-                patient._id,
-              );
-              return;
-            }
-            const randomVal = Math.floor(Math.random() * messages.length);
-            const message = messages[randomVal].text;
-            const newMessage = new Message({
-              patientID: new ObjectId(patient._id),
-              phoneNumber: patient.phoneNumber,
-              date: new Date(),
-              message,
-              sender: 'BOT',
-              sent: false,
-            });
-            await newMessage.save();
-          }
-        });
-      })
-      .catch((err) => console.log(err));
+      );
+      if (messages.length < 1) {
+        console.log(
+          'Unable to find message appropriate for member = ',
+          patient._id,
+        );
+        return;
+      }
+      const randomVal = Math.floor(Math.random() * messages.length);
+      const message = messages[randomVal].text;
+      const newMessage = new Message({
+        patientID: new ObjectId(patient._id),
+        phoneNumber: patient.phoneNumber,
+        date: new Date(),
+        message,
+        sender: 'BOT',
+        sent: false,
+      });
+      await newMessage.save();
+    }
   });
 };
 
