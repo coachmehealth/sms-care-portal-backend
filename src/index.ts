@@ -7,7 +7,8 @@ import './utils/config';
 
 import patientRouter from './routes/patient.api';
 import messageRouter from './routes/messages/messages.api';
-import coachRouter from './routes/coach.auth';
+import coachAuthRouter from './routes/coach.auth';
+import coachApiRouter from './routes/coach.api';
 import twilioRouter from './routes/twilio/twilio.api';
 import messageTemplateRouter from './routes/messageTemplate.api';
 import RequireHttps from './middleware/require_https';
@@ -26,7 +27,8 @@ app.use(RequireHttps);
 
 // API Routes
 app.use('/api/patients', patientRouter);
-app.use('/api/coaches', coachRouter);
+app.use('/api/coaches', coachAuthRouter);
+app.use('/api/coaches', coachApiRouter);
 app.use('/api/messages', messageRouter);
 app.use('/api/twilio', twilioRouter);
 app.use('/api/messageTemplate', messageTemplateRouter);

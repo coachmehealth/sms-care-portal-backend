@@ -9,7 +9,6 @@ import {
   generateRefreshToken,
   validateRefreshToken,
 } from './coach.util';
-import { Patient } from '../models/patient.model';
 import { CoachMeRequest } from '../types/coach_me_request';
 
 const router = express.Router();
@@ -105,31 +104,6 @@ router.get('/me', auth, (req: CoachMeRequest, res) => {
       return res.status(200).json({ success: true, data: coach });
     })
     .catch((err) => errorHandler(res, err.message));
-});
-
-router.get('/getPatients', auth, (req, res) => {
-  return Patient.find().then((patients) => {
-    return res.status(200).json(patients);
-  });
-});
-
-router.get('/search', auth, async (req, res) => {
-  const { query } = req.query;
-  Coach.aggregate([
-    { $project: { name: { $concat: ['$firstName', ' ', '$lastName'] } } },
-    {
-      $match: {
-        name: {
-          $regex: query,
-          $options: 'i',
-        },
-      },
-    },
-  ]).exec((err, result) => {
-    return res.status(200).json({
-      coaches: result,
-    });
-  });
 });
 
 export default router;
