@@ -9,7 +9,7 @@
     "prettier"
   ],
   "rules": {
-    "no-console": "warn",
+    "no-console": 0,
     "max-len": "off",
     "no-underscore-dangle": "off",
     "prettier/prettier": "warn",
