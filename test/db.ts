@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable guard-for-in */
 import mongoose from 'mongoose';
 import request from 'supertest';
 import express from 'express';
@@ -38,13 +36,12 @@ export const connectDatabase = async () => {
 export const clearDatabase = async () => {
   try {
     const collections = await mongoose.connection.collections;
-    for (const key in collections) {
+    const collectionsKeys = Object.keys(collections);
+    collectionsKeys.forEach(async (key: string) => {
       const collection = collections[key];
-      // eslint-disable-next-line no-await-in-loop
       await collection.deleteMany({});
-    }
+    });
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.log('could not clear database', error);
   }
 };

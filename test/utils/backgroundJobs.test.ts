@@ -4,7 +4,7 @@ import {
   getAverageAndCounts,
   getWeeklyList,
   getMessageTemplate,
-} from './utils';
+} from '../../src/background_jobs/utils';
 
 describe('Message utils', () => {
   it('compareOutcomesByDate() Compares outcomes objects by date', () => {
