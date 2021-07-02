@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/indent */
 import express from 'express';
 import { Outcome } from '../models/outcome.model';
 import { Patient, PatientForPhoneNumber } from '../models/patient.model';

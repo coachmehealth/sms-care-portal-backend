@@ -33,9 +33,10 @@ const sendMessage = async (msg: IMessage) => {
       : TWILIO_FROM_NUMBER_GENERAL;
 
   twilio.messages.create({
-    body: msg.message,
+    body: msg.message.includes('https://') ? '' : msg.message,
     from: twilioNumber,
     to: msg.phoneNumber,
+    mediaUrl: [msg.message.includes('https://') ? msg.message : ''],
   });
 
   await Message.findOneAndUpdate(
