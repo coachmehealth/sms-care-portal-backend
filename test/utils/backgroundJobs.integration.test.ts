@@ -13,6 +13,7 @@ import { Message } from '../../src/models/message.model';
 import {
   dailyMidnightMessages,
   weeklyReport,
+  getDateRelativeToMonday,
 } from '../../src/background_jobs/utils';
 import { Schedule } from '../../src/models/schedule.model';
 
@@ -28,13 +29,6 @@ if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
   beforeEach(async () => clearDatabase());
   afterAll(() => closeDatabase());
-
-  const getDateRelativeToMonday = (offset: number) => {
-    const lastMonday = new Date();
-    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
-    lastMonday.setDate(lastMonday.getDate() + offset);
-    return lastMonday;
-  };
 
   describe('Message utils', () => {
     jest.useFakeTimers();
@@ -89,8 +83,8 @@ if (process.env.NODE_ENV === 'development') {
     });
 
     it('weekly reports run if it has not run this week', async (done) => {
-      const lastSunday = getDateRelativeToMonday(-1);
-      await new Schedule({ weeklyReport: lastSunday }).save();
+      const lastWeek = getDateRelativeToMonday(-8);
+      await new Schedule({ weeklyReport: lastWeek }).save();
       await createPatient('111');
       const patient = await Patient.findOne({});
       if (patient) {
@@ -116,11 +110,36 @@ if (process.env.NODE_ENV === 'development') {
       await waitJest(500);
       const message = await Message.findOne({});
       const schedule = await Schedule.find({});
-      expect(schedule[0]?.weeklyReport > lastSunday).toBeTruthy();
+      expect(schedule[0]?.weeklyReport > lastWeek).toBeTruthy();
       expect(message?.message.includes('Tue')).toBeFalsy();
       expect(message?.message.includes('Sat')).toBeTruthy();
       expect(message?.message.includes('111')).toBeTruthy();
       expect(message?.sent).toBeFalsy();
+      done();
+    });
+
+    it('weekly reports runs when it deploys at month change', async (done) => {
+      const lastMondayFromSatJul3 = new Date(2021, 5, 28);
+      await new Schedule({ weeklyReport: lastMondayFromSatJul3 }).save();
+      weeklyReport();
+      await waitJest(500);
+      const schedule = await Schedule.find({});
+      expect(
+        schedule[0]?.weeklyReport.getDate() -
+          getDateRelativeToMonday(0).getDate(),
+      ).toBe(0);
+      done();
+    });
+
+    it('weekly reports runs when it deploys on any day of the week', async (done) => {
+      await new Schedule({ weeklyReport: getDateRelativeToMonday(-7) }).save();
+      weeklyReport();
+      await waitJest(500);
+      const schedule = await Schedule.find({});
+      expect(
+        schedule[0]?.weeklyReport.getDate() -
+          getDateRelativeToMonday(0).getDate(),
+      ).toBe(0);
       done();
     });
   });
