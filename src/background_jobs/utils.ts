@@ -272,20 +272,29 @@ const sendOutcomesToPatients = async () => {
   });
 };
 
+export const getDateRelativeToMonday = (offset: number) => {
+  const lastMonday = new Date();
+  lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
+  lastMonday.setDate(lastMonday.getDate() + offset);
+  return lastMonday;
+};
+
 export const weeklyReport = async () => {
   const schedules = await Schedule.findOne({});
   const lastMonday = new Date();
+  const today = new Date();
   lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
   if (!schedules) {
-    const newSchedule = new Schedule({ weeklyReport: lastMonday });
+    const newSchedule = new Schedule({
+      weeklyReport: getDateRelativeToMonday(-7),
+    });
     await newSchedule.save();
     weeklyReport();
   }
   if (schedules) {
-    const dateDifference =
-      lastMonday.getDate() - schedules.weeklyReport.getDate();
-    if (dateDifference > 0) {
-      await Schedule.findOneAndUpdate({}, { weeklyReport: new Date() });
+    const dateDifference = today.getTime() - schedules.weeklyReport.getTime();
+    if (dateDifference > 6.5 * 24 * 3600 * 1000) {
+      await Schedule.findOneAndUpdate({}, { weeklyReport: lastMonday });
       sendOutcomesToPatients();
     }
   }
