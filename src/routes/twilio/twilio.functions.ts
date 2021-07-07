@@ -1,16 +1,30 @@
 import twilio from 'twilio';
 import { ObjectId } from 'mongodb';
-import { PatientForPhoneNumber } from '../../models/patient.model';
+import { IPatient, PatientForPhoneNumber } from '../../models/patient.model';
 import { parseInboundPatientMessage } from '../../domain/message_parsing';
 import { responseForParsedMessage } from '../../domain/glucose_reading_responses';
 import { Outcome } from '../../models/outcome.model';
 import { Message } from '../../models/message.model';
 import errorHandler from '../error';
+import outreachMessage from '../outreach/outreachResponses';
 
 const { MessagingResponse } = twilio.twiml;
 
 const UNRECOGNIZED_PATIENT_RESPONSE =
   'We do not recognize this number. Please contact CoachMe support.';
+
+export const parseOutreachMessage = async (
+  message: string,
+  patient: IPatient,
+) => {
+  if (message.includes('YES')) {
+    outreachMessage(patient, true);
+  }
+
+  if (message.includes('MORE')) {
+    outreachMessage(patient);
+  }
+};
 
 export const manageIncomingMessages = async (
   req: any,
@@ -45,6 +59,9 @@ export const manageIncomingMessages = async (
     await incomingMessage.save();
 
     if (incoming === 'General') {
+      if (patient.outreach.outreach && !patient.outreach.yes) {
+        parseOutreachMessage(inboundMessage, patient);
+      }
       res.writeHead(200, { 'Content-Type': 'text/xml' });
       res.end(incomingMessage.sent.toString());
     }
