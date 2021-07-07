@@ -80,7 +80,10 @@ export const waitJest = async (waitTime: number) => {
   jest.useFakeTimers();
 };
 
-export const createPatient = async (phoneNumber: string) => {
+export const createPatient = async (
+  phoneNumber: string,
+  outreach: object = {},
+) => {
   const patient = new Patient({
     firstName: 'jest',
     lastName: 'jester',
@@ -93,6 +96,7 @@ export const createPatient = async (phoneNumber: string) => {
     responseCount: 0,
     reports: [],
     enabled: true,
+    outreach,
   });
   await patient.save();
 };
@@ -103,6 +107,7 @@ export const createMessage = async (
   sent: boolean,
   sender: string,
   date: Date = new Date(),
+  isGeneralNumber: boolean,
 ) => {
   const newMessage = new Message({
     phoneNumber: patient.phoneNumber,
@@ -111,7 +116,7 @@ export const createMessage = async (
     message,
     date,
     sent,
-    receivedWith: 'Glucose',
+    isGeneralNumber,
   });
   await newMessage.save();
 };
@@ -140,4 +145,14 @@ export const createMessageTemplate = async () => {
     type: 'Initial',
   });
   await newMessageTemplate.save();
+};
+
+export const createCoach = async () => {
+  const newCoach = new Coach({
+    firstName: 'jest',
+    lastName: 'test',
+    email: 'jest@test.net',
+    password: '12e81dh2819d',
+  });
+  await newCoach.save();
 };

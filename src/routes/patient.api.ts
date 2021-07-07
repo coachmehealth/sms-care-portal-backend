@@ -4,6 +4,7 @@ import { Patient, PatientForPhoneNumber } from '../models/patient.model';
 import auth from '../middleware/auth';
 import errorHandler from './error';
 import { Message } from '../models/message.model';
+import sendOutreachMessages from './outreach/sendOutreachMessages';
 
 const { ObjectId } = require('mongoose').Types;
 
@@ -87,8 +88,17 @@ router.post('/add', auth, async (req, res) => {
     coachName: req.body.coachName,
     enabled: req.body.isEnabled,
     prefTime: hours * 60 + mins,
+    clinic: req.body.clinic,
+    outreach: {
+      outreach: req.body.outreach.outreach,
+      complete: req.body.outreach.complete,
+      yes: req.body.outreach.yes,
+      lastMessageSent: req.body.outreach.lastMessageSent,
+      lastDate: req.body.outreach.lastDate,
+    },
   });
   return newPatient.save().then(() => {
+    sendOutreachMessages(req.body.phoneNumber);
     res.status(200).json({
       success: true,
     });
