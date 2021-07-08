@@ -6,9 +6,14 @@ import { manageIncomingMessages, sendMessage } from './twilio.functions';
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.post('/sendMessage', auth, (req, res) => sendMessage(req, res));
+router.post('/sendMessage', auth, async (req, res) => sendMessage(req, res));
 
-// this route receives and parses the message from one user, then responds accordingly with the appropriate output
-router.post('/reply', async (req, res) => manageIncomingMessages(req, res));
+router.post('/reply', async (req, res) =>
+  manageIncomingMessages(req, res, 'Glucose'),
+);
+
+router.post('/receive', async (req, res) =>
+  manageIncomingMessages(req, res, 'General'),
+);
 
 export default router;
