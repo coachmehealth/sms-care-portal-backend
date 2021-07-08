@@ -197,4 +197,24 @@ router.post('/status', auth, (req, res) => {
     .catch((err) => errorHandler(res, err.message));
 });
 
+router.post('/updateOutreach', auth, async (req, res) => {
+  const { patientID } = req.body;
+  const { outreach } = req.body;
+  const oldPatient = await Patient.findById(new ObjectId(patientID));
+  if (!oldPatient?.outreach.outreach && outreach.outreach) {
+    outreach.lastMessageSent = '0';
+    outreach.lastDate = new Date();
+  }
+  try {
+    await Patient.findByIdAndUpdate(new ObjectId(patientID), { outreach });
+  } catch (e) {
+    if (typeof e === 'string') {
+      errorHandler(res, e);
+    } else if (e instanceof Error) {
+      errorHandler(res, e.message);
+    }
+  }
+  return res.status(200).json('Patiet Outreach Changed!');
+});
+
 export default router;
