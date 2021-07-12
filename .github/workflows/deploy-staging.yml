@@ -20,4 +20,4 @@ jobs:
     - name: Add Git Remote aptible-staging
       run: git remote add aptible-staging ${{ secrets.APTIBLE_GIT_STAGING }}
     - name: push aptible
-      run: git fetch aptible-staging
+      run: bin/release_staging.sh
