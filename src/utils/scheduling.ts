@@ -27,8 +27,9 @@ const getPatientIdFromNumber = (number: any) => {
 
 // sends message, marks it as sent
 const sendMessage = async (msg: IMessage) => {
-  const twilioNumber =
-    msg.sender === 'BOT' ? TWILIO_FROM_NUMBER : TWILIO_FROM_NUMBER_GENERAL;
+  const twilioNumber = msg.isCoachingMessage
+    ? TWILIO_FROM_NUMBER
+    : TWILIO_FROM_NUMBER_GENERAL;
 
   twilio.messages.create({
     body: msg.message,
