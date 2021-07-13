@@ -28,9 +28,7 @@ const getPatientIdFromNumber = (number: any) => {
 // sends message, marks it as sent
 const sendMessage = async (msg: IMessage) => {
   const twilioNumber =
-    msg.sender === 'BOT' && !msg.isGeneralNumber
-      ? TWILIO_FROM_NUMBER
-      : TWILIO_FROM_NUMBER_GENERAL;
+    msg.sender === 'BOT' ? TWILIO_FROM_NUMBER : TWILIO_FROM_NUMBER_GENERAL;
 
   twilio.messages.create({
     body: msg.message,
@@ -59,15 +57,15 @@ const scheduleMessages = async (interval: number) => {
   const intervalStart = new Date();
   const intervalEnd = new Date(intervalStart.getTime());
   intervalEnd.setSeconds(intervalEnd.getSeconds() + interval);
-  const docs = await Message.find({
+  const messages = await Message.find({
     date: {
       $lt: intervalEnd,
     },
     sent: false,
   });
 
-  docs.forEach((doc: any) => {
-    sendMessage(doc);
+  messages.forEach((message: any) => {
+    sendMessage(message);
   });
 };
 
