@@ -20,8 +20,7 @@ describe('extractNumerics', () => {
 
   it('can handle extra between multiple scores text before number', () => {
     expect(extractNumerics(' my score is 100 other score is 200  ')).toEqual([
-      100,
-      200,
+      100, 200,
     ]);
   });
 });

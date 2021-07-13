@@ -24,8 +24,7 @@ router.post('/add', auth, async (req, res) => {
 
   if (await PatientForPhoneNumber(req.body.phoneNumber)) {
     return res.status(400).json({
-      msg:
-        'Unable to add patient: patient already exists for given phone number',
+      msg: 'Unable to add patient: patient already exists for given phone number',
     });
   }
 
@@ -146,8 +145,7 @@ router.get('/getPatientOutcomes/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Outcome.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList)
-        return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
 
       return res
         .status(200)
@@ -170,8 +168,7 @@ router.get('/getPatientMessages/:patientID', auth, (req, res) => {
   const id = req.params.patientID;
   return Message.find({ patientID: new ObjectId(id) })
     .then((outcomeList) => {
-      if (!outcomeList)
-        return errorHandler(res, 'No outcomes found!');
+      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
       return res.status(200).json(outcomeList);
     })
     .catch((err) => errorHandler(res, err.message));
