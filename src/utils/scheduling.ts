@@ -26,10 +26,10 @@ const getPatientIdFromNumber = (number: any) => {
 };
 
 export const getTwilioNumber = (isCoachingMessage: boolean) => {
-  const twilioNumber = !isCoachingMessage
-    ? TWILIO_FROM_NUMBER
-    : TWILIO_FROM_NUMBER_GENERAL;
-  return twilioNumber;
+  if (isCoachingMessage) {
+    return TWILIO_FROM_NUMBER_GENERAL;
+  }
+  return TWILIO_FROM_NUMBER;
 };
 
 // sends message, marks it as sent
