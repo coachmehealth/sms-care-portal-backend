@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/indent */
 import express from 'express';
 import { Outcome } from '../models/outcome.model';
 import { Patient, PatientForPhoneNumber } from '../models/patient.model';
@@ -164,14 +163,18 @@ router.get('/getPatient/:patientID', auth, (req, res) => {
     .catch((err) => errorHandler(res, err.message));
 });
 
-router.get('/getPatientMessages/:patientID', auth, (req, res) => {
+router.get('/getPatientMessages/:patientID', auth, async (req, res) => {
   const id = req.params.patientID;
-  return Message.find({ patientID: new ObjectId(id) })
-    .then((outcomeList) => {
-      if (!outcomeList) return errorHandler(res, 'No outcomes found!');
-      return res.status(200).json(outcomeList);
-    })
-    .catch((err) => errorHandler(res, err.message));
+  const messages = await Message.find({
+    patientID: new ObjectId(id),
+    sent: true,
+    isCoachingMessage: true,
+  });
+
+  if (!messages) {
+    return errorHandler(res, 'No messages found!');
+  }
+  return res.status(200).json(messages);
 });
 
 router.post('/status', auth, (req, res) => {
