@@ -1,5 +1,6 @@
 export const DATABASE_URI = process.env.DATABASE_URI || '';
 export const JWT_SECRET = process.env.JWT_SECRET || '';
+export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || '';
 
 // sendgrid configs
 export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
@@ -12,7 +13,7 @@ export const parseTwilioFromNumber = (rawNumber: string | undefined) => {
   return rawNumber.replace(/[^0-9.]/g, '');
 };
 
-export const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
+export const { TWILIO_ACCOUNT_SID } = process.env;
 
 export const TWILIO_FROM_NUMBER = parseTwilioFromNumber(
   process.env.TWILIO_FROM_NUMBER,
