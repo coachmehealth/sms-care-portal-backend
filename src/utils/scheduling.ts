@@ -35,10 +35,12 @@ export const getTwilioNumber = (isCoachingMessage: boolean) => {
 // sends message, marks it as sent
 const sendMessage = async (msg: IMessage) => {
   const twilioNumber = getTwilioNumber(msg.isCoachingMessage);
+
   twilio.messages.create({
-    body: msg.message,
+    body: msg.message.includes('https://') ? '' : msg.message,
     from: twilioNumber,
     to: msg.phoneNumber,
+    mediaUrl: [msg.message.includes('https://') ? msg.message : ''],
   });
 
   await Message.findOneAndUpdate(
