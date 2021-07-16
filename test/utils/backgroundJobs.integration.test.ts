@@ -7,7 +7,6 @@ import {
   createOutcome,
   createMessageTemplate,
 } from '../db';
-import runCronSchedules from '../../src/background_jobs/cronSchedules';
 import { Patient } from '../../src/models/patient.model';
 import { Message } from '../../src/models/message.model';
 import {
@@ -17,43 +16,12 @@ import {
 } from '../../src/background_jobs/utils';
 import { Schedule } from '../../src/models/schedule.model';
 
-const cron = require('node-cron');
-
-jest.mock('node-cron', () => {
-  return {
-    schedule: jest.fn(),
-  };
-});
-
 if (process.env.NODE_ENV === 'development') {
   beforeAll(() => connectDatabase());
   beforeEach(async () => clearDatabase());
   afterAll(() => closeDatabase());
 
   describe('Message utils', () => {
-    jest.useFakeTimers();
-    it('runCronSchedules() schedules get called at the appropiate times  ', async (done) => {
-      const logSpy = jest.spyOn(console, 'log');
-      cron.schedule.mockImplementation(async (frequency: any, callback: any) =>
-        callback(),
-      );
-      runCronSchedules();
-      expect(logSpy).toBeCalledWith('Running batch of scheduled messages');
-      expect(cron.schedule).toBeCalledWith(
-        '0 0 5 * * *',
-        expect.any(Function),
-        {
-          scheduled: true,
-          timezone: 'America/Los_Angeles',
-        },
-      );
-      expect(cron.schedule).toBeCalledWith('0 11 * * *', expect.any(Function), {
-        scheduled: true,
-        timezone: 'America/Los_Angeles',
-      });
-      done();
-    });
-
     it('sends midnight messages', async (done) => {
       await createPatient('111');
       await createMessageTemplate();

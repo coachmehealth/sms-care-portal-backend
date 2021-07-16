@@ -1,19 +1,22 @@
+import cron from 'cron';
 import { dailyMidnightMessages, weeklyReport } from './utils';
-
-const cron = require('node-cron');
 
 const runCronSchedules = () => {
   // run messages every day at midnight PST
-  cron.schedule('0 0 5 * * *', () => dailyMidnightMessages(), {
-    scheduled: true,
-    timezone: 'America/Los_Angeles',
+  const dailyMidnightMessagesJob = new cron.CronJob({
+    cronTime: '0 0 5 * * *',
+    onTick: () => dailyMidnightMessages(),
+    timeZone: 'America/Los_Angeles',
   });
+  dailyMidnightMessagesJob.start();
 
   // Send report every monday at 11 AM. PST.
-  cron.schedule('0 11 * * *', () => weeklyReport(), {
-    scheduled: true,
-    timezone: 'America/Los_Angeles',
+  const weeklyReportJob = new cron.CronJob({
+    cronTime: '* 10 * * *',
+    onTick: () => weeklyReport(),
+    timeZone: 'America/Los_Angeles',
   });
+  weeklyReportJob.start();
 };
 
 export default runCronSchedules;

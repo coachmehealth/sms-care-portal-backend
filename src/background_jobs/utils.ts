@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+import { differenceInDays } from 'date-fns';
 import { ObjectId } from 'mongodb';
 import { Message } from '../models/message.model';
 import { MessageTemplate } from '../models/messageTemplate.model';
@@ -292,8 +292,8 @@ export const weeklyReport = async () => {
     weeklyReport();
   }
   if (schedules) {
-    const dateDifference = today.getTime() - schedules.weeklyReport.getTime();
-    if (dateDifference > 6.5 * 24 * 3600 * 1000) {
+    const dateDifference = differenceInDays(today, schedules.weeklyReport);
+    if (dateDifference > 6) {
       await Schedule.findOneAndUpdate({}, { weeklyReport: lastMonday });
       sendOutcomesToPatients();
     }
