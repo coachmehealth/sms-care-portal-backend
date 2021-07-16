@@ -107,22 +107,7 @@ if (process.env.NODE_ENV === 'development') {
   });
 
   describe('Twilio.functions.ts error handling works as intended', () => {
-    it('sendMessage route recieves status 400 if it gets empty arguments ', async () => {
-      const res = await request(twilioApp)
-        .post('/sendMessage')
-        .set('Authorization', `Bearer ${tokenObject.token[0]}`)
-        .type('form')
-        .send({
-          message: '',
-          to: '',
-          patientID: '',
-        });
-      expect(res.statusCode).toBe(400);
-      const messages = await Message.find();
-      expect(messages.length).toBe(0);
-    });
-
-    it('receive route recieves status 204 if it gets wrong number argument ', async () => {
+    it('receive route catches if it gets wrong number argument ', async () => {
       await createPatient('1114446668');
       const patient = await Patient.findOne();
       const res = await request(twilioApp)
@@ -134,12 +119,12 @@ if (process.env.NODE_ENV === 'development') {
           From: '',
           patientID: `${patient?._id}`,
         });
-      expect(res.statusCode).toBe(204);
+      expect(res.statusCode).toBe(200);
       const messages = await Message.find();
       expect(messages.length).toBe(0);
     });
 
-    it('reply route recieves status 204 if it gets wrong patient ', async () => {
+    it('reply route catches if it gets wrong patient ', async () => {
       const res = await request(twilioApp)
         .post('/receive')
         .set('Authorization', `Bearer ${tokenObject.token[0]}`)
@@ -149,7 +134,7 @@ if (process.env.NODE_ENV === 'development') {
           From: '001114446668',
           patientID: '',
         });
-      expect(res.statusCode).toBe(204);
+      expect(res.statusCode).toBe(200);
       const messages = await Message.find();
       expect(messages.length).toBe(0);
     });

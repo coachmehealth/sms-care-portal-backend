@@ -19,42 +19,56 @@ const twiml = new MessagingResponse();
 const UNRECOGNIZED_PATIENT_RESPONSE =
   'We do not recognize this number. Please contact CoachMe support.';
 
-export const saveMessage = async (
-  fromPhoneNumber: string,
-  incoming: 'Glucose' | 'General',
-  patientID: string,
-  inboundMessage: string,
-  date: Date,
-  sender: string,
-) => {
+export const saveMessage = async ({
+  fromPhoneNumber,
+  incoming,
+  patientID,
+  message,
+  date,
+  sender,
+}: {
+  fromPhoneNumber: string;
+  incoming: boolean;
+  patientID: string;
+  message: string;
+  date: Date;
+  sender: string;
+}) => {
   const incomingMessage = new Message({
     sent: true,
     phoneNumber: fromPhoneNumber,
     patientID,
-    message: inboundMessage,
+    message,
     sender,
     date,
-    isCoachingMessage: incoming === 'General',
+    isCoachingMessage: incoming,
   });
 
   await incomingMessage.save();
   return incomingMessage;
 };
 
-export const createNewOutcome = async (
-  res: any,
-  patientID: string,
-  parsedResponse: any,
-  fromPhoneNumber: string,
-  inboundMessage: string,
-  date: Date,
-) => {
+export const createNewOutcome = async ({
+  res,
+  patientID,
+  parsedResponse,
+  fromPhoneNumber,
+  message,
+  date,
+}: {
+  res: any;
+  patientID: string;
+  parsedResponse: any;
+  fromPhoneNumber: string;
+  message: string;
+  date: Date;
+}) => {
   try {
     if (parsedResponse.glucoseReading) {
       const outcome = new Outcome({
         phoneNumber: fromPhoneNumber,
         patientID,
-        response: inboundMessage,
+        response: message,
         value: parsedResponse.glucoseReading.score,
         alertType: parsedResponse.glucoseReading.classification,
         date,
@@ -71,103 +85,127 @@ export const createNewOutcome = async (
   }
 };
 
-export const manageIncomingMessages = async (
-  req: any,
-  res: any,
-  incoming: 'Glucose' | 'General',
-) => {
+export const manageGlucoseMessages = async ({
+  res,
+  inboundMessage,
+  patientID,
+  fromPhoneNumber,
+  date,
+  patientLanguage,
+  incoming,
+}: {
+  res: any;
+  inboundMessage: string;
+  patientID: string;
+  fromPhoneNumber: string;
+  date: Date;
+  patientLanguage: string;
+  incoming: boolean;
+}) => {
+  const parsedResponse = parseInboundPatientMessage(inboundMessage);
+  await createNewOutcome({
+    res,
+    patientID,
+    parsedResponse,
+    fromPhoneNumber,
+    message: inboundMessage,
+    date,
+  });
+
+  const responseMessage = await responseForParsedMessage(
+    parsedResponse,
+    patientLanguage,
+  );
+
+  await saveMessage({
+    fromPhoneNumber,
+    incoming,
+    patientID,
+    message: responseMessage,
+    date,
+    sender: 'BOT',
+  });
+  res.writeHead(200, { 'Content-Type': 'text/xml' });
+  res.end(twiml.message(responseMessage).toString());
+};
+
+export const manageIncomingMessages = async ({
+  req,
+  res,
+  incoming,
+}: {
+  req: any;
+  res: any;
+  incoming: boolean;
+}) => {
   const inboundMessage = req.body.Body || 'Invalid Text (image)';
   const fromPhoneNumber = req.body.From.slice(2);
   const date = new Date();
   const patient = await PatientForPhoneNumber(fromPhoneNumber);
   if (!patient) {
     const twilioResponse = twiml.message(UNRECOGNIZED_PATIENT_RESPONSE);
-    res.writeHead(204, { 'Content-Type': 'text/xml' });
+    res.writeHead(200, { 'Content-Type': 'text/xml' });
     res.end(twilioResponse.toString());
     return;
   }
+  const patientID = patient?._id;
 
-  const incomingMessage = await saveMessage(
+  const incomingMessage = await saveMessage({
     fromPhoneNumber,
     incoming,
-    patient?._id,
-    inboundMessage,
+    patientID,
+    message: inboundMessage,
     date,
-    'PATIENT',
-  );
+    sender: 'PATIENT',
+  });
 
-  if (incoming === 'General') {
+  if (incoming) {
     res.writeHead(200, { 'Content-Type': 'text/xml' });
     res.end(incomingMessage?.sent.toString());
+    return;
   }
 
-  if (incoming === 'Glucose') {
-    const parsedResponse = parseInboundPatientMessage(inboundMessage);
-    await createNewOutcome(
+  if (!incoming) {
+    manageGlucoseMessages({
       res,
-      patient?._id,
-      parsedResponse,
-      fromPhoneNumber,
       inboundMessage,
-      date,
-    );
-
-    const responseMessage = await responseForParsedMessage(
-      parsedResponse,
-      patient?.language,
-    );
-
-    await saveMessage(
-      fromPhoneNumber,
-      incoming,
-      patient?._id,
-      responseMessage,
-      date,
-      'BOT',
-    );
-    res.writeHead(200, { 'Content-Type': 'text/xml' });
-    res.end(twiml.message(responseMessage).toString());
-  }
-};
-
-export const sendMessage = async (req: any, res: any) => {
-  try {
-    const recept = req.body.to;
-    const patientID = new ObjectId(req.body.patientID);
-    const date = new Date();
-    const content = req.body.message;
-    const outgoingMessage = new Message({
-      sent: false,
-      phoneNumber: recept,
       patientID,
-      message: content,
-      sender: 'COACH',
+      fromPhoneNumber,
       date,
-      isCoachingMessage: true,
+      patientLanguage: patient.language,
+      incoming,
     });
-
-    await outgoingMessage.save();
-    res.status(200).send({
-      success: true,
-      msg: outgoingMessage,
-    });
-  } catch (e) {
-    if (typeof e === 'string') {
-      errorHandler(res, e);
-    } else if (e instanceof Error) {
-      errorHandler(res, e.message);
-    }
   }
 };
 
-router.post('/sendMessage', auth, async (req, res) => sendMessage(req, res));
+router.post('/sendMessage', auth, async (req, res) => {
+  const recept = req.body.to;
+  const patientID = new ObjectId(req.body.patientID);
+  const date = new Date();
+  const content = req.body.message;
+  const outgoingMessage = new Message({
+    sent: false,
+    phoneNumber: recept,
+    patientID,
+    message: content,
+    sender: 'COACH',
+    date,
+    isCoachingMessage: true,
+  });
+
+  await outgoingMessage.save();
+  res.status(200).send({
+    success: true,
+    msg: outgoingMessage,
+  });
+});
 
 router.post('/reply', async (req, res) =>
-  manageIncomingMessages(req, res, 'Glucose'),
+  manageIncomingMessages({ req, res, incoming: false }),
 );
 
 router.post('/receive', async (req, res) =>
-  manageIncomingMessages(req, res, 'General'),
+  manageIncomingMessages({ req, res, incoming: true }),
 );
 
 export default router;
